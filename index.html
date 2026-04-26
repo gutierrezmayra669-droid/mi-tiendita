@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Tiendita - Nieves y Snacks</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -19,7 +20,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -118,7 +119,6 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-            transition: all 0.3s;
         }
 
         .form-group input:focus {
@@ -164,12 +164,6 @@
             font-weight: 600;
             margin-top: 10px;
             width: 100%;
-            transition: all 0.3s;
-        }
-
-        .demo-btn:hover {
-            background: #667eea;
-            color: white;
         }
 
         /* Main App */
@@ -185,7 +179,6 @@
         .logo {
             font-size: 36px;
             font-weight: 700;
-            letter-spacing: -1px;
         }
 
         .header-right {
@@ -203,20 +196,10 @@
             font-weight: 600;
         }
 
-        .user-role {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
         .cart-icon {
             position: relative;
             cursor: pointer;
             font-size: 28px;
-            transition: transform 0.3s;
-        }
-
-        .cart-icon:hover {
-            transform: scale(1.1);
         }
 
         .cart-count {
@@ -243,11 +226,6 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         /* Customer View */
@@ -263,7 +241,6 @@
             font-size: 18px;
             font-weight: 300;
             opacity: 0.9;
-            margin-bottom: 10px;
         }
 
         .search-box {
@@ -279,8 +256,6 @@
             border: none;
             border-radius: 50px;
             font-size: 16px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            outline: none;
         }
 
         .search-btn {
@@ -288,15 +263,9 @@
             background: white;
             border: none;
             border-radius: 50px;
-            font-size: 16px;
             font-weight: 500;
             cursor: pointer;
             color: #667eea;
-            transition: all 0.3s;
-        }
-
-        .search-btn:hover {
-            transform: translateY(-2px);
         }
 
         .products-grid {
@@ -316,14 +285,12 @@
 
         .product-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .product-image {
             width: 100%;
             height: 250px;
             object-fit: cover;
-            background: #f5f5f5;
         }
 
         .product-info {
@@ -382,11 +349,6 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .product-btn:hover {
-            transform: scale(1.02);
         }
 
         /* Owner View */
@@ -396,6 +358,32 @@
 
         .owner-view.active {
             display: block;
+        }
+
+        .owner-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .owner-tab {
+            padding: 12px 20px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .owner-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .owner-header {
@@ -438,6 +426,26 @@
             opacity: 0.9;
         }
 
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
         .orders-container {
             background: white;
             border-radius: 12px;
@@ -457,12 +465,6 @@
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-
-        .order-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
         }
 
         .order-header {
@@ -477,7 +479,6 @@
         .order-id {
             font-weight: 700;
             color: #333;
-            font-size: 16px;
         }
 
         .order-status {
@@ -495,6 +496,11 @@
         .status-completed {
             background: #d4edda;
             color: #155724;
+        }
+
+        .status-paid {
+            background: #cfe2ff;
+            color: #084298;
         }
 
         .order-info {
@@ -529,14 +535,6 @@
             font-size: 14px;
         }
 
-        .order-item {
-            margin-bottom: 8px;
-        }
-
-        .order-item:last-child {
-            margin-bottom: 0;
-        }
-
         .order-total {
             font-size: 18px;
             font-weight: 700;
@@ -556,7 +554,6 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 13px;
-            transition: all 0.3s;
         }
 
         .btn-complete {
@@ -564,28 +561,15 @@
             color: white;
         }
 
-        .btn-complete:hover {
-            background: #45a049;
-        }
-
         .btn-delete {
             background: #ff6b6b;
             color: white;
-        }
-
-        .btn-delete:hover {
-            background: #ff5252;
         }
 
         .empty-orders {
             text-align: center;
             padding: 40px;
             color: #999;
-        }
-
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
         }
 
         /* Modal */
@@ -614,7 +598,6 @@
             max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         .close {
@@ -623,10 +606,6 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-        }
-
-        .close:hover {
-            color: #000;
         }
 
         .modal-title {
@@ -699,6 +678,38 @@
             border-radius: 8px;
         }
 
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            margin-top: 5px;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .payment-method {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .payment-method.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
         .checkout-btn {
             width: 100%;
             padding: 12px;
@@ -711,8 +722,32 @@
             margin-top: 15px;
         }
 
-        .checkout-btn:hover {
-            transform: translateY(-2px);
+        .card-form {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .card-form.active {
+            display: block;
+        }
+
+        .card-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
         }
 
         footer {
@@ -733,13 +768,12 @@
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
 
-            .order-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
             .owner-stats {
                 grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper {
+                height: 250px;
             }
         }
     </style>
@@ -796,7 +830,7 @@
                 <div class="header-right">
                     <div class="user-info">
                         <div class="user-name" id="customerDisplayName"></div>
-                        <div class="user-role">Cliente</div>
+                        <div style="font-size: 12px; opacity: 0.8;">Cliente</div>
                     </div>
                     <div class="cart-icon" onclick="abrirCarrito()">
                         🛒
@@ -825,37 +859,105 @@
                 <div class="header-right">
                     <div class="user-info">
                         <div class="user-name">Administrador</div>
-                        <div class="user-role">Owner</div>
+                        <div style="font-size: 12px; opacity: 0.8;">Owner</div>
                     </div>
                     <button class="logout-btn" onclick="logout()">Salir</button>
                 </div>
             </header>
 
-            <div class="owner-header">
-                <div class="owner-title">📊 Gestión de Pedidos</div>
-                <div class="owner-stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalOrders">0</div>
-                        <div class="stat-label">Total de Pedidos</div>
+            <div class="owner-tabs">
+                <button class="owner-tab active" onclick="mostrarTab('dashboard')">📊 Dashboard</button>
+                <button class="owner-tab" onclick="mostrarTab('reportes')">📈 Reportes</button>
+                <button class="owner-tab" onclick="mostrarTab('pedidos')">📋 Pedidos</button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab">
+                <div class="owner-header">
+                    <div class="owner-title">📊 Resumen de Ventas</div>
+                    <div class="owner-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalOrders">0</div>
+                            <div class="stat-label">Total de Pedidos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="pendingOrders">0</div>
+                            <div class="stat-label">Pendientes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="completedOrders">0</div>
+                            <div class="stat-label">Completados</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalRevenue">$0</div>
+                            <div class="stat-label">Ingresos Totales</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="pendingOrders">0</div>
-                        <div class="stat-label">Pendientes</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">💰 Ventas por Día</div>
+                    <div class="chart-wrapper">
+                        <canvas id="ventasChart"></canvas>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="completedOrders">0</div>
-                        <div class="stat-label">Completados</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalRevenue">$0</div>
-                        <div class="stat-label">Ingresos Totales</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">🍦 Productos Más Vendidos</div>
+                    <div class="chart-wrapper">
+                        <canvas id="productosChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="orders-container">
-                <div class="orders-title">📋 Todos los Pedidos</div>
-                <div id="ordersList"></div>
+            <!-- Reportes Tab -->
+            <div id="reportesTab" style="display: none;">
+                <div class="owner-header">
+                    <div class="owner-title">📈 Reportes Detallados</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📊 Métodos de Pago</div>
+                    <div class="chart-wrapper">
+                        <canvas id="pagosChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📋 Resumen de Ventas</div>
+                    <div id="reporteSummary" style="padding: 20px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="border-bottom: 2px solid #ddd;">
+                                <th style="text-align: left; padding: 10px;">Métrica</th>
+                                <th style="text-align: right; padding: 10px;">Valor</th>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 10px;">Promedio por Pedido</td>
+                                <td style="text-align: right; padding: 10px; font-weight: 600;" id="promedioPedido">$0</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 10px;">Pedido Más Alto</td>
+                                <td style="text-align: right; padding: 10px; font-weight: 600;" id="pedidoAlto">$0</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 10px;">Pedido Más Bajo</td>
+                                <td style="text-align: right; padding: 10px; font-weight: 600;" id="pedidoBajo">$0</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600;">Total de Clientes</td>
+                                <td style="text-align: right; padding: 10px; font-weight: 600;" id="totalClientes">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedidos Tab -->
+            <div id="pedidosTab" style="display: none;">
+                <div class="orders-container">
+                    <div class="orders-title">📋 Todos los Pedidos</div>
+                    <div id="ordersList"></div>
+                </div>
             </div>
 
             <footer>
@@ -876,14 +978,44 @@
                     <span id="total">$0</span>
                 </div>
                 <div class="order-form">
+                    <h3 style="margin-bottom: 15px; color: #333;">Información del Pedido</h3>
+                    
                     <div class="form-group">
-                        <label for="customerEmail">Email</label>
+                        <label>Email</label>
                         <input type="email" id="customerEmail" placeholder="tu@email.com">
                     </div>
                     <div class="form-group">
-                        <label for="customerAddress">Dirección</label>
+                        <label>Dirección</label>
                         <textarea id="customerAddress" placeholder="Tu dirección..."></textarea>
                     </div>
+
+                    <h3 style="margin: 20px 0 15px 0; color: #333;">Método de Pago</h3>
+                    <div class="payment-methods">
+                        <button type="button" class="payment-method active" onclick="seleccionarPago('efectivo')">💵 Efectivo</button>
+                        <button type="button" class="payment-method" onclick="seleccionarPago('tarjeta')">💳 Tarjeta</button>
+                    </div>
+
+                    <div id="cardForm" class="card-form">
+                        <div class="form-group">
+                            <label>Número de Tarjeta</label>
+                            <input type="text" class="card-input" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+                        <div class="card-row">
+                            <div class="form-group">
+                                <label>Vencimiento (MM/YY)</label>
+                                <input type="text" class="card-input" id="cardExpiry" placeholder="12/25" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="text" class="card-input" id="cardCVV" placeholder="123" maxlength="3">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre en la Tarjeta</label>
+                            <input type="text" class="card-input" id="cardName" placeholder="Tu nombre">
+                        </div>
+                    </div>
+
                     <button class="checkout-btn" onclick="confirmarPedido()">Confirmar Pedido</button>
                 </div>
             </div>
@@ -911,6 +1043,8 @@
         let usuarioActual = null;
         let carrito = [];
         let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+        let metodoPagoSeleccionado = 'efectivo';
+        let charts = {};
 
         // Login
         function cambiarTab(tab) {
@@ -967,9 +1101,6 @@
             document.getElementById('loginScreen').classList.add('active');
             document.getElementById('customerView').classList.remove('active');
             document.getElementById('ownerView').classList.remove('active');
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerPhone').value = '';
-            document.getElementById('ownerPassword').value = '';
         }
 
         // Productos
@@ -1071,10 +1202,41 @@
             actualizarVistaCarrito();
         }
 
+        function seleccionarPago(metodo) {
+            metodoPagoSeleccionado = metodo;
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const cardForm = document.getElementById('cardForm');
+            if (metodo === 'tarjeta') {
+                cardForm.classList.add('active');
+            } else {
+                cardForm.classList.remove('active');
+            }
+        }
+
         function confirmarPedido() {
             const email = document.getElementById('customerEmail').value;
             const address = document.getElementById('customerAddress').value;
             const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
+            if (metodoPagoSeleccionado === 'tarjeta') {
+                const cardNumber = document.getElementById('cardNumber').value;
+                const cardExpiry = document.getElementById('cardExpiry').value;
+                const cardCVV = document.getElementById('cardCVV').value;
+                const cardName = document.getElementById('cardName').value;
+
+                if (!cardNumber || !cardExpiry || !cardCVV || !cardName) {
+                    alert('Por favor completa todos los datos de la tarjeta');
+                    return;
+                }
+
+                // Validación simple de tarjeta
+                if (cardNumber.replace(/\s/g, '').length !== 16) {
+                    alert('Número de tarjeta inválido');
+                    return;
+                }
+            }
 
             const pedido = {
                 id: 'PED-' + Date.now(),
@@ -1084,14 +1246,15 @@
                 address,
                 items: carrito,
                 total,
-                estado: 'pendiente',
+                estado: 'completado',
+                metodoPago: metodoPagoSeleccionado,
                 fecha: new Date().toLocaleString()
             };
 
             pedidos.push(pedido);
             localStorage.setItem('pedidos', JSON.stringify(pedidos));
 
-            alert('✓ Pedido confirmado!\n\nID: ' + pedido.id + '\nTotal: $' + total);
+            alert('✓ ¡Pedido confirmado!\n\nID: ' + pedido.id + '\nTotal: $' + total + '\nMétodo: ' + (metodoPagoSeleccionado === 'tarjeta' ? 'Tarjeta' : 'Efectivo'));
             carrito = [];
             actualizarContadorCarrito();
             cerrarCarrito();
@@ -1104,6 +1267,20 @@
         }
 
         // Owner Panel
+        function mostrarTab(tab) {
+            document.querySelectorAll('[id$="Tab"]').forEach(t => t.style.display = 'none');
+            document.getElementById(tab + 'Tab').style.display = 'block';
+            
+            document.querySelectorAll('.owner-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'reportes') {
+                setTimeout(() => {
+                    generarGraficosReportes();
+                }, 100);
+            }
+        }
+
         function actualizarPanelOwner() {
             const total = pedidos.length;
             const pendientes = pedidos.filter(p => p.estado === 'pendiente').length;
@@ -1115,14 +1292,115 @@
             document.getElementById('completedOrders').textContent = completados;
             document.getElementById('totalRevenue').textContent = '$' + ingresos;
 
+            generarGraficos();
             mostrarPedidos();
+        }
+
+        function generarGraficos() {
+            // Gráfico de ventas por día
+            const ventasPorDia = {};
+            pedidos.forEach(p => {
+                const fecha = p.fecha.split(' ')[0];
+                ventasPorDia[fecha] = (ventasPorDia[fecha] || 0) + p.total;
+            });
+
+            const ctx1 = document.getElementById('ventasChart').getContext('2d');
+            if (charts.ventas) charts.ventas.destroy();
+            charts.ventas = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(ventasPorDia),
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: Object.values(ventasPorDia),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de productos más vendidos
+            const productosCantidad = {};
+            pedidos.forEach(p => {
+                p.items.forEach(item => {
+                    productosCantidad[item.nombre] = (productosCantidad[item.nombre] || 0) + item.cantidad;
+                });
+            });
+
+            const ctx2 = document.getElementById('productosChart').getContext('2d');
+            if (charts.productos) charts.productos.destroy();
+            charts.productos = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(productosCantidad),
+                    datasets: [{
+                        label: 'Cantidad Vendida',
+                        data: Object.values(productosCantidad),
+                        backgroundColor: '#764ba2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y'
+                }
+            });
+        }
+
+        function generarGraficosReportes() {
+            // Gráfico de métodos de pago
+            const metodosPago = {};
+            pedidos.forEach(p => {
+                const metodo = p.metodoPago || 'efectivo';
+                metodosPago[metodo] = (metodosPago[metodo] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('pagosChart').getContext('2d');
+            if (charts.pagos) charts.pagos.destroy();
+            charts.pagos = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(metodosPago).map(m => m === 'efectivo' ? '💵 Efectivo' : '💳 Tarjeta'),
+                    datasets: [{
+                        data: Object.values(metodosPago),
+                        backgroundColor: ['#667eea', '#764ba2']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Resumen
+            const ingresos = pedidos.reduce((sum, p) => sum + p.total, 0);
+            const promedio = pedidos.length > 0 ? (ingresos / pedidos.length).toFixed(2) : 0;
+            const pedidoAlto = pedidos.length > 0 ? Math.max(...pedidos.map(p => p.total)) : 0;
+            const pedidoBajo = pedidos.length > 0 ? Math.min(...pedidos.map(p => p.total)) : 0;
+            const clientes = new Set(pedidos.map(p => p.telefono)).size;
+
+            document.getElementById('promedioPedido').textContent = '$' + promedio;
+            document.getElementById('pedidoAlto').textContent = '$' + pedidoAlto;
+            document.getElementById('pedidoBajo').textContent = '$' + pedidoBajo;
+            document.getElementById('totalClientes').textContent = clientes;
         }
 
         function mostrarPedidos() {
             const ordersList = document.getElementById('ordersList');
             
             if (pedidos.length === 0) {
-                ordersList.innerHTML = '<div class="empty-orders"><div class="empty-icon">📭</div><p>No hay pedidos aún</p></div>';
+                ordersList.innerHTML = '<div class="empty-orders"><div style="font-size: 48px; margin-bottom: 15px;">📭</div><p>No hay pedidos aún</p></div>';
                 return;
             }
 
@@ -1135,6 +1413,9 @@
                             <div class="order-id">${pedido.id}</div>
                             <span class="order-status ${pedido.estado === 'pendiente' ? 'status-pending' : 'status-completed'}">
                                 ${pedido.estado.toUpperCase()}
+                            </span>
+                            <span class="order-status status-paid" style="background: ${pedido.metodoPago === 'tarjeta' ? '#cfe2ff' : '#fff3cd'}; color: ${pedido.metodoPago === 'tarjeta' ? '#084298' : '#856404'};">
+                                ${pedido.metodoPago === 'tarjeta' ? '💳 Tarjeta' : '💵 Efectivo'}
                             </span>
                         </div>
                         <div class="order-info">
