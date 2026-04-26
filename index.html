@@ -889,6 +889,9 @@
                 <button class="owner-tab" onclick="mostrarTab('reportes')">📈 Reportes</button>
                 <button class="owner-tab" onclick="mostrarTab('pedidos')">📋 Pedidos</button>
                 <button class="owner-tab" onclick="mostrarTab('productos')">🛍️ Productos</button>
+                <button class="owner-tab" onclick="mostrarTab('promociones')">🎁 Promociones</button>
+                <button class="owner-tab" onclick="mostrarTab('empleados')">👥 Empleados</button>
+                <button class="owner-tab" onclick="mostrarTab('mayoreo')">💼 Mayoreo</button>
                 <button class="owner-tab" onclick="mostrarTab('configuracion')">⚙️ Configuración</button>
             </div>
 
@@ -1010,6 +1013,111 @@
                 <div class="chart-container">
                     <div class="chart-title">🛍️ Productos Actuales</div>
                     <div id="productsList" style="padding: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- Promociones Tab -->
+            <div id="promocionesTab" style="display: none;">
+                <div class="owner-header">
+                    <div class="owner-title">🎁 Promociones y Descuentos</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">➕ Crear Cupón de Descuento</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Código del Cupón</label>
+                            <input type="text" id="codigoDescuento" placeholder="PROMO2024" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Descuento (%)</label>
+                            <input type="number" id="porcentajeDescuento" placeholder="10" min="1" max="100" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Descripción</label>
+                            <input type="text" id="descripcionDescuento" placeholder="Ej: Descuento en Nieves" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="agregarDescuento()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">➕ Crear Cupón</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">🎁 Cupones Activos</div>
+                    <div id="cuponesLista" style="padding: 20px;"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📢 Banner de Promoción</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Texto del Banner</label>
+                            <input type="text" id="textoBanner" placeholder="¡Descuento especial hoy!" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="actualizarBanner()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">💾 Guardar Banner</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empleados Tab -->
+            <div id="empleadosTab" style="display: none;">
+                <div class="owner-header">
+                    <div class="owner-title">👥 Gestión de Empleados</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">➕ Agregar Empleado</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Nombre del Empleado</label>
+                            <input type="text" id="nombreEmpleado" placeholder="Juan Pérez" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Puesto</label>
+                            <input type="text" id="puestoEmpleado" placeholder="Vendedor" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Teléfono</label>
+                            <input type="tel" id="telefonoEmpleado" placeholder="+1234567890" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="agregarEmpleado()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">➕ Agregar Empleado</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">👥 Empleados Registrados</div>
+                    <div id="empleadosLista" style="padding: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- Mayoreo Tab -->
+            <div id="mayoreoTab" style="display: none;">
+                <div class="owner-header">
+                    <div class="owner-title">💼 Gestión de Mayoreo</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📊 Configurar Descuentos por Cantidad</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Cantidad Mínima</label>
+                            <input type="number" id="cantidadMinima" placeholder="10" min="1" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Descuento (%)</label>
+                            <input type="number" id="descuentoMayoreo" placeholder="15" min="1" max="100" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="agregarTierMayoreo()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">➕ Agregar Tier</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">💰 Tiers de Mayoreo Activos</div>
+                    <div id="tiersMayoreoLista" style="padding: 20px;"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📋 Cotizaciones de Mayoreo</div>
+                    <div id="cotizacionesMayoreoLista" style="padding: 20px;"></div>
                 </div>
             </div>
 
