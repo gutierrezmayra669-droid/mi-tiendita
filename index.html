@@ -892,6 +892,7 @@
                 <button class="owner-tab" onclick="mostrarTab('promociones')">🎁 Promociones</button>
                 <button class="owner-tab" onclick="mostrarTab('empleados')">👥 Empleados</button>
                 <button class="owner-tab" onclick="mostrarTab('mayoreo')">💼 Mayoreo</button>
+                <button class="owner-tab" onclick="mostrarTab('envios')">📦 Envíos</button>
                 <button class="owner-tab" onclick="mostrarTab('configuracion')">⚙️ Configuración</button>
             </div>
 
@@ -1118,6 +1119,48 @@
                 <div class="chart-container">
                     <div class="chart-title">📋 Cotizaciones de Mayoreo</div>
                     <div id="cotizacionesMayoreoLista" style="padding: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- Envíos Tab -->
+            <div id="enviosTab" style="display: none;">
+                <div class="owner-header">
+                    <div class="owner-title">📦 Gestión de Tarifas de Envío</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">➕ Crear Tarifa de Envío</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Nombre de la Zona</label>
+                            <input type="text" id="nombreZona" placeholder="Ej: Centro, Zona Norte, etc." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Costo de Envío ($)</label>
+                            <input type="number" id="costoEnvio" placeholder="5.00" min="0" step="0.01" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Tiempo de Entrega (días)</label>
+                            <input type="number" id="tiempoEntrega" placeholder="1" min="1" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="agregarTarifaEnvio()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">➕ Crear Tarifa</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📦 Tarifas de Envío Activas</div>
+                    <div id="tarifasEnvioLista" style="padding: 20px;"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">⚙️ Configuración General de Envíos</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Envío Gratis a partir de ($)</label>
+                            <input type="number" id="envioGratisDesde" placeholder="50.00" min="0" step="0.01" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="guardarConfigEnvios()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">💾 Guardar Configuración</button>
+                    </div>
                 </div>
             </div>
 
