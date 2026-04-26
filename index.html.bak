@@ -840,25 +840,12 @@
                 </div>
             </header>
 
-            <div class="search-box" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button onclick="mostrarTabCliente('productos')" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">🛍️ Productos</button>
-                <button onclick="mostrarTabCliente('pedidos')" style="flex: 1; padding: 12px; background: #f0f0f0; color: #333; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">📋 Mis Pedidos</button>
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="Busca tu producto...">
+                <button class="search-btn" onclick="buscar()">Buscar</button>
             </div>
 
-            <div id="clienteProductosTab">
-                <div class="search-box">
-                    <input type="text" class="search-input" id="searchInput" placeholder="Busca tu producto...">
-                    <button class="search-btn" onclick="buscar()">Buscar</button>
-                </div>
-                <div class="products-grid" id="productsGrid"></div>
-            </div>
-
-            <div id="clientePedidosTab" style="display: none;">
-                <div style="padding: 20px;">
-                    <h2 style="margin-bottom: 20px; color: #333;">📋 Mis Pedidos</h2>
-                    <div id="clientePedidosList"></div>
-                </div>
-            </div>
+            <div class="products-grid" id="productsGrid"></div>
 
             <footer>
                 <p>&copy; 2026 Mi Tiendita. Todos los derechos reservados.</p>
@@ -1643,57 +1630,6 @@
         }
 
         document.getElementById('searchInput').addEventListener('keyup', buscar);
-
-        // NAVEGACIÓN DE TABS DEL CLIENTE
-        function mostrarTabCliente(tab) {
-            document.getElementById('clienteProductosTab').style.display = tab === 'productos' ? 'block' : 'none';
-            document.getElementById('clientePedidosTab').style.display = tab === 'pedidos' ? 'block' : 'none';
-            
-            if (tab === 'pedidos') {
-                mostrarPedidosCliente();
-            }
-        }
-
-        function mostrarPedidosCliente() {
-            const container = document.getElementById('clientePedidosList');
-            if (!container) return;
-
-            const misPedidos = pedidos.filter(p => p.cliente === usuarioActual.nombre && p.telefono === usuarioActual.telefono);
-
-            if (misPedidos.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">Aún no tienes pedidos. ¡Haz tu primer pedido!</p>';
-                return;
-            }
-
-            let html = '<div style="display: grid; gap: 20px;">';
-
-            misPedidos.forEach(pedido => {
-                const items = pedido.items.map(item => `${item.nombre} (x${item.cantidad})`).join(', ');
-                const estado = pedido.estado === 'completado' ? '✅ Completado' : '⏳ Pendiente';
-                const colorEstado = pedido.estado === 'completado' ? '#28a745' : '#ffc107';
-
-                html += `
-                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h3 style="margin: 0; color: #333;">Pedido #${pedido.id.substring(4)}</h3>
-                            <span style="background: ${colorEstado}; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">${estado}</span>
-                        </div>
-                        
-                        <div style="background: #f9f9f9; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                            <p style="margin: 8px 0; font-size: 14px;"><strong>Productos:</strong> ${items}</p>
-                            <p style="margin: 8px 0; font-size: 14px;"><strong>Total:</strong> $${pedido.total}</p>
-                            <p style="margin: 8px 0; font-size: 14px;"><strong>Método de Pago:</strong> ${pedido.metodoPago === 'efectivo' ? '💵 Efectivo' : pedido.metodoPago === 'tarjeta' ? '💳 Tarjeta' : '🟦 Mercado Pago'}</p>
-                            <p style="margin: 8px 0; font-size: 14px;"><strong>Fecha:</strong> ${pedido.fecha}</p>
-                        </div>
-
-                        ${pedido.estado === 'completado' ? '<p style="text-align: center; color: #28a745; font-weight: 600; padding: 10px; background: #d4edda; border-radius: 4px;">🎉 ¡Tu pedido está listo! Pasa a recogerlo</p>' : '<p style="text-align: center; color: #ffc107; font-weight: 600; padding: 10px; background: #fff3cd; border-radius: 4px;">⏳ Tu pedido está siendo preparado...</p>'}
-                    </div>
-                `;
-            });
-
-            html += '</div>';
-            container.innerHTML = html;
-        }
 
         // GESTIÓN DE PRODUCTOS
         function agregarProducto() {

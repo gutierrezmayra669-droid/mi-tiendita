@@ -1,12 +1,18 @@
 {
   "name": "mi-tiendita",
+  "description": "Sistema de ventas de nieves y snacks con panel de administración",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.1",
-  "type": "module",
+  "author": "Tu Nombre",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "vite": "^5.0.0"
