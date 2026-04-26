@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tiendita - Nieves y Snacks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 30px auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            outline: none;
+            transition: box-shadow 0.3s;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #667eea;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .product-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .product-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+            padding: 30px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 36px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .product-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🍦 Mi Tiendita</div>
+            <div class="tagline">Nieves y Snacks Deliciosos</div>
+        </header>
+
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="Busca tu producto favorito...">
+            <button class="search-btn" onclick="buscar()">Buscar</button>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Los productos se cargarán aquí -->
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Mi Tiendita. Todos los derechos reservados. Hecho con ❤️</p>
+        </footer>
+    </div>
+
+    <script>
+        const productos = [
+            { id: 1, nombre: "Nieves de Chorro", precio: 15, imagen: "images/nieves_chorro.png" },
+            { id: 2, nombre: "Tostitos Preparados", precio: 40, imagen: "images/tostitos_preparados.png" },
+            { id: 3, nombre: "Mangoneada", precio: 25, imagen: "images/mangoneada.png" },
+            { id: 4, nombre: "Tostitos con Verduras", precio: 40, imagen: "images/tostitos_verduras.png" },
+            { id: 5, nombre: "Paletas de Hielo", precio: 20, imagen: "images/paletas_hielo.png" },
+            { id: 6, nombre: "Paletas de Crema", precio: 20, imagen: "images/paletas_crema.png" },
+            { id: 7, nombre: "Tostitos con Queso", precio: 35, imagen: "images/tostitos_queso.png" },
+            { id: 8, nombre: "Volcanes", precio: 40, imagen: "images/volcanes.png" },
+            { id: 9, nombre: "Llelitos", precio: 7, imagen: "images/llelitos.png" },
+            { id: 10, nombre: "Bolsa de Hielo", precio: 25, imagen: "images/bolsa_hielo.png" },
+            { id: 11, nombre: "Raspa de Chaguitos", precio: 30, imagen: "images/raspa_chaguitos.png" },
+            { id: 12, nombre: "Choco Bananos", precio: 10, imagen: "images/choco_bananos.png" },
+            { id: 13, nombre: "Nieve en Vaso Grande", precio: 35, imagen: "images/nieve_vaso_grande.png" },
+            { id: 14, nombre: "Cacahuetes Preparados", precio: 25, imagen: "images/cacahuetes_preparados.png" }
+        ];
+
+        function mostrarProductos(items = productos) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            items.forEach(producto => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${producto.imagen}" alt="${producto.nombre}" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">${producto.nombre}</div>
+                        <div class="product-price">$${producto.precio}</div>
+                        <button class="product-btn" onclick="comprar('${producto.nombre}', ${producto.precio})">Comprar Ahora</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function buscar() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtrados = productos.filter(p => 
+                p.nombre.toLowerCase().includes(query)
+            );
+            mostrarProductos(filtrados);
+        }
+
+        function comprar(nombre, precio) {
+            alert(`¡Gracias por tu interés en ${nombre}!\n\nPrecio: $${precio}\n\nContacta a Mi Tiendita para completar tu compra.`);
+        }
+
+        // Mostrar todos los productos al cargar
+        mostrarProductos();
+
+        // Buscar mientras escribes
+        document.getElementById('searchInput').addEventListener('keyup', buscar);
+    </script>
+</body>
+</html>
