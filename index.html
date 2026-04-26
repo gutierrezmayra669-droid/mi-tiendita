@@ -869,6 +869,7 @@
                 <button class="owner-tab active" onclick="mostrarTab('dashboard')">📊 Dashboard</button>
                 <button class="owner-tab" onclick="mostrarTab('reportes')">📈 Reportes</button>
                 <button class="owner-tab" onclick="mostrarTab('pedidos')">📋 Pedidos</button>
+                <button class="owner-tab" onclick="mostrarTab('configuracion')">⚙️ Configuración</button>
             </div>
 
             <!-- Dashboard Tab -->
@@ -960,6 +961,73 @@
                 </div>
             </div>
 
+            <!-- Configuración Tab -->
+            <div id="configuracionTab" style="display: none;">
+                <div class="owner-header">
+                    <div class="owner-title">⚙️ Configuración de la Tienda</div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">💳 Métodos de Pago</div>
+                    <div style="padding: 20px;">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;">
+                                <input type="checkbox" id="metodoEfectivo" checked onchange="guardarConfiguracion()" style="width: 20px; height: 20px;">
+                                💵 Efectivo
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;">
+                                <input type="checkbox" id="metodoTarjeta" checked onchange="guardarConfiguracion()" style="width: 20px; height: 20px;">
+                                💳 Tarjeta de Crédito/Débito
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;">
+                                <input type="checkbox" id="metodoMercadoPago" onchange="guardarConfiguracion()" style="width: 20px; height: 20px;">
+                                🟦 Mercado Pago
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">🟦 Configuración de Mercado Pago</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Access Token</label>
+                            <input type="password" id="mercadoPagoToken" placeholder="Ingresa tu Access Token de Mercado Pago" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace;">
+                            <p style="font-size: 12px; color: #999; margin-top: 8px;">📌 Obtén tu token en: https://www.mercadopago.com.mx/developers/panel</p>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Email de Mercado Pago</label>
+                            <input type="email" id="mercadoPagoEmail" placeholder="tu@email.com" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="guardarConfiguracion()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">💾 Guardar Configuración</button>
+                        <div id="configMessage" style="margin-top: 15px; padding: 12px; border-radius: 6px; display: none; text-align: center; font-weight: 600;"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">📝 Información de la Tienda</div>
+                    <div style="padding: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Nombre de la Tienda</label>
+                            <input type="text" id="nombreTienda" placeholder="Mi Tiendita" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Teléfono de Contacto</label>
+                            <input type="tel" id="telefonoTienda" placeholder="+1234567890" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">Email de Contacto</label>
+                            <input type="email" id="emailTienda" placeholder="contacto@tiendita.com" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button onclick="guardarConfiguracion()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">💾 Guardar Información</button>
+                    </div>
+                </div>
+            </div>
+
             <footer>
                 <p>&copy; 2026 Mi Tiendita. Panel de Administración.</p>
             </footer>
@@ -1045,6 +1113,11 @@
         let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
         let metodoPagoSeleccionado = 'efectivo';
         let charts = {};
+        let configuracion = JSON.parse(localStorage.getItem('configuracionTienda')) || {
+            metodos: { efectivo: true, tarjeta: true, mercadopago: false },
+            mercadopago: { token: '', email: '' },
+            tienda: { nombre: 'Mi Tiendita', telefono: '', email: '' }
+        };
 
         // Login
         function cambiarTab(tab) {
@@ -1087,6 +1160,7 @@
             document.getElementById('customerDisplayName').textContent = usuarioActual.nombre;
             mostrarProductos();
             actualizarContadorCarrito();
+            actualizarMetodosPago();
         }
 
         function mostrarVistaOwner() {
@@ -1157,6 +1231,7 @@
         function abrirCarrito() {
             document.getElementById('cartModal').classList.add('active');
             actualizarVistaCarrito();
+            actualizarMetodosPago();
         }
 
         function cerrarCarrito() {
@@ -1213,6 +1288,25 @@
             } else {
                 cardForm.classList.remove('active');
             }
+        }
+
+        function actualizarMetodosPago() {
+            const container = document.querySelector('.payment-methods');
+            if (!container) return;
+
+            let html = '';
+            if (configuracion.metodos.efectivo) {
+                html += '<button type="button" class="payment-method active" onclick="seleccionarPago(\'efectivo\')">💵 Efectivo</button>';
+            }
+            if (configuracion.metodos.tarjeta) {
+                html += '<button type="button" class="payment-method" onclick="seleccionarPago(\'tarjeta\')">💳 Tarjeta</button>';
+            }
+            if (configuracion.metodos.mercadopago && configuracion.mercadopago.token) {
+                html += '<button type="button" class="payment-method" onclick="seleccionarPago(\'mercadopago\')">🟦 Mercado Pago</button>';
+            }
+
+            container.innerHTML = html;
+            metodoPagoSeleccionado = 'efectivo';
         }
 
         function confirmarPedido() {
@@ -1279,6 +1373,44 @@
                     generarGraficosReportes();
                 }, 100);
             }
+
+            if (tab === 'configuracion') {
+                cargarConfiguracion();
+            }
+        }
+
+        function cargarConfiguracion() {
+            document.getElementById('metodoEfectivo').checked = configuracion.metodos.efectivo;
+            document.getElementById('metodoTarjeta').checked = configuracion.metodos.tarjeta;
+            document.getElementById('metodoMercadoPago').checked = configuracion.metodos.mercadopago;
+            document.getElementById('mercadoPagoToken').value = configuracion.mercadopago.token;
+            document.getElementById('mercadoPagoEmail').value = configuracion.mercadopago.email;
+            document.getElementById('nombreTienda').value = configuracion.tienda.nombre;
+            document.getElementById('telefonoTienda').value = configuracion.tienda.telefono;
+            document.getElementById('emailTienda').value = configuracion.tienda.email;
+        }
+
+        function guardarConfiguracion() {
+            configuracion.metodos.efectivo = document.getElementById('metodoEfectivo').checked;
+            configuracion.metodos.tarjeta = document.getElementById('metodoTarjeta').checked;
+            configuracion.metodos.mercadopago = document.getElementById('metodoMercadoPago').checked;
+            configuracion.mercadopago.token = document.getElementById('mercadoPagoToken').value;
+            configuracion.mercadopago.email = document.getElementById('mercadoPagoEmail').value;
+            configuracion.tienda.nombre = document.getElementById('nombreTienda').value;
+            configuracion.tienda.telefono = document.getElementById('telefonoTienda').value;
+            configuracion.tienda.email = document.getElementById('emailTienda').value;
+
+            localStorage.setItem('configuracionTienda', JSON.stringify(configuracion));
+
+            const msg = document.getElementById('configMessage');
+            msg.textContent = '✓ Configuración guardada exitosamente';
+            msg.style.background = '#d4edda';
+            msg.style.color = '#155724';
+            msg.style.display = 'block';
+
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
         }
 
         function actualizarPanelOwner() {
