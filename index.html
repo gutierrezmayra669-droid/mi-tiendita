@@ -24,23 +24,52 @@
         }
 
         header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             color: white;
             margin-bottom: 40px;
             padding-top: 20px;
         }
 
         .logo {
-            font-size: 48px;
+            font-size: 36px;
             font-weight: 700;
-            margin-bottom: 10px;
             letter-spacing: -1px;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 28px;
+            transition: transform 0.3s;
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .tagline {
             font-size: 18px;
             font-weight: 300;
             opacity: 0.9;
+            margin-bottom: 10px;
         }
 
         .search-box {
@@ -129,6 +158,42 @@
             margin-bottom: 15px;
         }
 
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 5px;
+            width: fit-content;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .quantity-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
         .product-btn {
             width: 100%;
             padding: 12px;
@@ -147,6 +212,220 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
+        /* Modal del Carrito */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-details {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .cart-item-price {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-cart-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .cart-summary {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .summary-row.total {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .order-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .checkout-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
         footer {
             text-align: center;
             color: white;
@@ -156,8 +435,13 @@
         }
 
         @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
             .logo {
-                font-size: 36px;
+                font-size: 28px;
             }
 
             .search-box {
@@ -172,14 +456,35 @@
             .product-image {
                 height: 200px;
             }
+
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cart-item-price {
+                margin-right: 0;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">🍦 Mi Tiendita</div>
-            <div class="tagline">Nieves y Snacks Deliciosos</div>
+            <div>
+                <div class="logo">🍦 Mi Tiendita</div>
+                <div class="tagline">Nieves y Snacks Deliciosos</div>
+            </div>
+            <div class="cart-icon" onclick="abrirCarrito()">
+                🛒
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
         </header>
 
         <div class="search-box">
@@ -194,6 +499,60 @@
         <footer>
             <p>&copy; 2026 Mi Tiendita. Todos los derechos reservados. Hecho con ❤️</p>
         </footer>
+    </div>
+
+    <!-- Modal del Carrito -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarCarrito()">&times;</span>
+            <div class="modal-title">🛒 Mi Carrito</div>
+            
+            <div id="successMessage" class="success-message"></div>
+            
+            <div id="cartItems"></div>
+            
+            <div id="cartSummary" class="cart-summary" style="display: none;">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="total">$0</span>
+                </div>
+
+                <div class="order-form">
+                    <h3 style="margin-bottom: 15px; color: #333;">Información del Pedido</h3>
+                    
+                    <div class="form-group">
+                        <label for="customerName">Nombre Completo *</label>
+                        <input type="text" id="customerName" placeholder="Tu nombre" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerPhone">Teléfono *</label>
+                        <input type="tel" id="customerPhone" placeholder="Tu teléfono" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerEmail">Email (Opcional)</label>
+                        <input type="email" id="customerEmail" placeholder="tu@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerAddress">Dirección de Entrega</label>
+                        <textarea id="customerAddress" placeholder="Dirección completa..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerNotes">Notas Especiales</label>
+                        <textarea id="customerNotes" placeholder="Instrucciones especiales o preferencias..."></textarea>
+                    </div>
+
+                    <button class="checkout-btn" onclick="confirmarPedido()">Confirmar Pedido</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -214,11 +573,15 @@
             { id: 14, nombre: "Cacahuetes Preparados", precio: 25, imagen: "images/cacahuetes_preparados.png" }
         ];
 
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        let cantidades = {};
+
         function mostrarProductos(items = productos) {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
             
             items.forEach(producto => {
+                const cantidad = carrito.find(p => p.id === producto.id)?.cantidad || 1;
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
@@ -226,10 +589,178 @@
                     <div class="product-info">
                         <div class="product-name">${producto.nombre}</div>
                         <div class="product-price">$${producto.precio}</div>
-                        <button class="product-btn" onclick="comprar('${producto.nombre}', ${producto.precio})">Comprar Ahora</button>
+                        
+                        <div class="quantity-selector">
+                            <button class="quantity-btn" onclick="cambiarCantidad(${producto.id}, -1)">-</button>
+                            <input type="number" class="quantity-input" id="qty-${producto.id}" value="${cantidad}" min="1" onchange="actualizarCantidad(${producto.id}, this.value)">
+                            <button class="quantity-btn" onclick="cambiarCantidad(${producto.id}, 1)">+</button>
+                        </div>
+                        
+                        <button class="product-btn" onclick="agregarAlCarrito(${producto.id}, '${producto.nombre}', ${producto.precio})">Agregar al Carrito</button>
                     </div>
                 `;
                 grid.appendChild(card);
+            });
+        }
+
+        function cambiarCantidad(productoId, cambio) {
+            const input = document.getElementById(`qty-${productoId}`);
+            let valor = parseInt(input.value) + cambio;
+            if (valor < 1) valor = 1;
+            input.value = valor;
+            cantidades[productoId] = valor;
+        }
+
+        function actualizarCantidad(productoId, valor) {
+            cantidades[productoId] = Math.max(1, parseInt(valor) || 1);
+        }
+
+        function agregarAlCarrito(id, nombre, precio) {
+            const cantidad = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+            const itemExistente = carrito.find(item => item.id === id);
+            
+            if (itemExistente) {
+                itemExistente.cantidad += cantidad;
+            } else {
+                carrito.push({ id, nombre, precio, cantidad });
+            }
+            
+            guardarCarrito();
+            mostrarNotificacion(`✓ ${nombre} agregado al carrito`);
+        }
+
+        function guardarCarrito() {
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            actualizarContadorCarrito();
+        }
+
+        function actualizarContadorCarrito() {
+            const total = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            document.getElementById('cartCount').textContent = total;
+        }
+
+        function abrirCarrito() {
+            document.getElementById('cartModal').style.display = 'block';
+            actualizarVistaCarrito();
+        }
+
+        function cerrarCarrito() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function actualizarVistaCarrito() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartSummaryDiv = document.getElementById('cartSummary');
+
+            if (carrito.length === 0) {
+                cartItemsDiv.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <p>Tu carrito está vacío</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Agrega productos para comenzar</p>
+                    </div>
+                `;
+                cartSummaryDiv.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            let subtotal = 0;
+
+            carrito.forEach(item => {
+                const itemTotal = item.precio * item.cantidad;
+                subtotal += itemTotal;
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.nombre}</div>
+                            <div class="cart-item-details">
+                                $${item.precio} × ${item.cantidad} = $${itemTotal}
+                            </div>
+                        </div>
+                        <div class="cart-item-price">$${itemTotal}</div>
+                        <button class="remove-btn" onclick="eliminarDelCarrito(${item.id})">Eliminar</button>
+                    </div>
+                `;
+            });
+
+            cartItemsDiv.innerHTML = html;
+            document.getElementById('subtotal').textContent = `$${subtotal}`;
+            document.getElementById('total').textContent = `$${subtotal}`;
+            cartSummaryDiv.style.display = 'block';
+        }
+
+        function eliminarDelCarrito(id) {
+            carrito = carrito.filter(item => item.id !== id);
+            guardarCarrito();
+            actualizarVistaCarrito();
+        }
+
+        function confirmarPedido() {
+            const nombre = document.getElementById('customerName').value.trim();
+            const telefono = document.getElementById('customerPhone').value.trim();
+            const email = document.getElementById('customerEmail').value.trim();
+            const direccion = document.getElementById('customerAddress').value.trim();
+            const notas = document.getElementById('customerNotes').value.trim();
+
+            if (!nombre || !telefono) {
+                alert('Por favor completa los campos requeridos (Nombre y Teléfono)');
+                return;
+            }
+
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            
+            const resumenPedido = carrito.map(item => 
+                `${item.nombre} (x${item.cantidad}) - $${item.precio * item.cantidad}`
+            ).join('\n');
+
+            const mensaje = `
+🎉 *NUEVO PEDIDO EN MI TIENDITA* 🎉
+
+👤 Cliente: ${nombre}
+📱 Teléfono: ${telefono}
+${email ? `📧 Email: ${email}` : ''}
+${direccion ? `📍 Dirección: ${direccion}` : ''}
+
+📦 *PRODUCTOS:*
+${resumenPedido}
+
+💰 *TOTAL: $${total}*
+
+${notas ? `📝 Notas: ${notas}` : ''}
+
+---
+Pedido realizado desde Mi Tiendita
+            `.trim();
+
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(mensaje).then(() => {
+                // Mostrar mensaje de éxito
+                const successDiv = document.getElementById('successMessage');
+                successDiv.textContent = '✓ Pedido copiado al portapapeles. Ahora puedes enviarlo por WhatsApp o email.';
+                successDiv.style.display = 'block';
+
+                // Limpiar formulario
+                setTimeout(() => {
+                    document.getElementById('customerName').value = '';
+                    document.getElementById('customerPhone').value = '';
+                    document.getElementById('customerEmail').value = '';
+                    document.getElementById('customerAddress').value = '';
+                    document.getElementById('customerNotes').value = '';
+                    
+                    // Limpiar carrito
+                    carrito = [];
+                    guardarCarrito();
+                    actualizarVistaCarrito();
+                    
+                    // Ocultar mensaje después de 3 segundos
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                        cerrarCarrito();
+                    }, 3000);
+                }, 1000);
+            }).catch(err => {
+                alert('Pedido:\n\n' + mensaje + '\n\nCopia este texto y envíalo por WhatsApp o email');
             });
         }
 
@@ -241,15 +772,43 @@
             mostrarProductos(filtrados);
         }
 
-        function comprar(nombre, precio) {
-            alert(`¡Gracias por tu interés en ${nombre}!\n\nPrecio: $${precio}\n\nContacta a Mi Tiendita para completar tu compra.`);
+        function mostrarNotificacion(mensaje) {
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 2000;
+                animation: slideIn 0.3s;
+            `;
+            notif.textContent = mensaje;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s';
+                setTimeout(() => notif.remove(), 300);
+            }, 2000);
         }
 
-        // Mostrar todos los productos al cargar
-        mostrarProductos();
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('cartModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
 
         // Buscar mientras escribes
         document.getElementById('searchInput').addEventListener('keyup', buscar);
+
+        // Inicializar
+        mostrarProductos();
+        actualizarContadorCarrito();
     </script>
 </body>
 </html>
