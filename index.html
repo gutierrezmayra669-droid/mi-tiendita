@@ -845,6 +845,12 @@
                 <button onclick="mostrarTabCliente('pedidos')" style="flex: 1; padding: 12px; background: #f0f0f0; color: #333; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">📋 Mis Pedidos</button>
             </div>
 
+            <div id="categoriasFilter" style="display: none; padding: 15px; background: #f9f9f9; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="filtrarPorCategoria('nieves')" class="categoria-btn active" style="padding: 10px 15px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🍦 Nieves y Snacks</button>
+                <button onclick="filtrarPorCategoria('papeleria')" class="categoria-btn" style="padding: 10px 15px; background: #f0f0f0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">📚 Papelería</button>
+                <button onclick="filtrarPorCategoria('abarrotes')" class="categoria-btn" style="padding: 10px 15px; background: #f0f0f0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🛒 Abarrotes</button>
+            </div>
+
             <div id="clienteProductosTab">
                 <div class="search-box">
                     <input type="text" class="search-input" id="searchInput" placeholder="Busca tu producto...">
@@ -1138,20 +1144,41 @@
 
     <script>
         let productos = JSON.parse(localStorage.getItem('productos')) || [
-            { id: 1, nombre: "Nieves de Chorro", precio: 15, imagen: "images/nieves_chorro.png" },
-            { id: 2, nombre: "Tostitos Preparados", precio: 40, imagen: "images/tostitos_preparados.png" },
-            { id: 3, nombre: "Mangoneada", precio: 25, imagen: "images/mangoneada.png" },
-            { id: 4, nombre: "Tostitos con Verduras", precio: 40, imagen: "images/tostitos_verduras.png" },
-            { id: 5, nombre: "Paletas de Hielo", precio: 20, imagen: "images/paletas_hielo.png" },
-            { id: 6, nombre: "Paletas de Crema", precio: 20, imagen: "images/paletas_crema.png" },
-            { id: 7, nombre: "Tostitos con Queso", precio: 35, imagen: "images/tostitos_queso.png" },
-            { id: 8, nombre: "Volcanes", precio: 40, imagen: "images/volcanes.png" },
-            { id: 9, nombre: "Llelitos", precio: 7, imagen: "images/llelitos.png" },
-            { id: 10, nombre: "Bolsa de Hielo", precio: 25, imagen: "images/bolsa_hielo.png" },
-            { id: 11, nombre: "Raspa de Chaguitos", precio: 30, imagen: "images/raspa_chaguitos.png" },
-            { id: 12, nombre: "Choco Bananos", precio: 10, imagen: "images/choco_bananos.png" },
-            { id: 13, nombre: "Nieve en Vaso Grande", precio: 35, imagen: "images/nieve_vaso_grande.png" },
-            { id: 14, nombre: "Cacahuetes Preparados", precio: 25, imagen: "images/cacahuetes_preparados.png" }
+            // NIEVES Y SNACKS
+            { id: 1, nombre: "Nieves de Chorro", precio: 15, imagen: "images/nieves_chorro.png", categoria: "nieves" },
+            { id: 2, nombre: "Tostitos Preparados", precio: 40, imagen: "images/tostitos_preparados.png", categoria: "nieves" },
+            { id: 3, nombre: "Mangoneada", precio: 25, imagen: "images/mangoneada.png", categoria: "nieves" },
+            { id: 4, nombre: "Tostitos con Verduras", precio: 40, imagen: "images/tostitos_verduras.png", categoria: "nieves" },
+            { id: 5, nombre: "Paletas de Hielo", precio: 20, imagen: "images/paletas_hielo.png", categoria: "nieves" },
+            { id: 6, nombre: "Paletas de Crema", precio: 20, imagen: "images/paletas_crema.png", categoria: "nieves" },
+            { id: 7, nombre: "Tostitos con Queso", precio: 35, imagen: "images/tostitos_queso.png", categoria: "nieves" },
+            { id: 8, nombre: "Volcanes", precio: 40, imagen: "images/volcanes.png", categoria: "nieves" },
+            { id: 9, nombre: "Llelitos", precio: 7, imagen: "images/llelitos.png", categoria: "nieves" },
+            { id: 10, nombre: "Bolsa de Hielo", precio: 25, imagen: "images/bolsa_hielo.png", categoria: "nieves" },
+            { id: 11, nombre: "Raspa de Chaguitos", precio: 30, imagen: "images/raspa_chaguitos.png", categoria: "nieves" },
+            { id: 12, nombre: "Choco Bananos", precio: 10, imagen: "images/choco_bananos.png", categoria: "nieves" },
+            { id: 13, nombre: "Nieve en Vaso Grande", precio: 35, imagen: "images/nieve_vaso_grande.png", categoria: "nieves" },
+            { id: 14, nombre: "Cacahuetes Preparados", precio: 25, imagen: "images/cacahuetes_preparados.png", categoria: "nieves" },
+            
+            // PAPELERÍA
+            { id: 15, nombre: "Cuaderno 100 Hojas", precio: 8, imagen: "images/default.png", categoria: "papeleria" },
+            { id: 16, nombre: "Bolígrafos (Pack 10)", precio: 5, imagen: "images/default.png", categoria: "papeleria" },
+            { id: 17, nombre: "Lápices (Pack 12)", precio: 4, imagen: "images/default.png", categoria: "papeleria" },
+            { id: 18, nombre: "Marcadores (Pack 8)", precio: 6, imagen: "images/default.png", categoria: "papeleria" },
+            { id: 19, nombre: "Goma de Borrar", precio: 1, imagen: "images/default.png", categoria: "papeleria" },
+            { id: 20, nombre: "Regla 30cm", precio: 2, imagen: "images/default.png", categoria: "papeleria" },
+            { id: 21, nombre: "Pegamento Escolar", precio: 3, imagen: "images/default.png", categoria: "papeleria" },
+            { id: 22, nombre: "Tijeras", precio: 4, imagen: "images/default.png", categoria: "papeleria" },
+            
+            // ABARROTES
+            { id: 23, nombre: "Arroz (1kg)", precio: 12, imagen: "images/default.png", categoria: "abarrotes" },
+            { id: 24, nombre: "Frijoles (1kg)", precio: 10, imagen: "images/default.png", categoria: "abarrotes" },
+            { id: 25, nombre: "Aceite Vegetal (1L)", precio: 8, imagen: "images/default.png", categoria: "abarrotes" },
+            { id: 26, nombre: "Sal (1kg)", precio: 3, imagen: "images/default.png", categoria: "abarrotes" },
+            { id: 27, nombre: "Azúcar (1kg)", precio: 5, imagen: "images/default.png", categoria: "abarrotes" },
+            { id: 28, nombre: "Harina (1kg)", precio: 4, imagen: "images/default.png", categoria: "abarrotes" },
+            { id: 29, nombre: "Leche (1L)", precio: 6, imagen: "images/default.png", categoria: "abarrotes" },
+            { id: 30, nombre: "Huevos (Docena)", precio: 7, imagen: "images/default.png", categoria: "abarrotes" }
         ];
 
         let usuarioActual = null;
@@ -1644,14 +1671,33 @@
 
         document.getElementById('searchInput').addEventListener('keyup', buscar);
 
+        let categoriaActual = 'nieves';
+
         // NAVEGACIÓN DE TABS DEL CLIENTE
         function mostrarTabCliente(tab) {
             document.getElementById('clienteProductosTab').style.display = tab === 'productos' ? 'block' : 'none';
             document.getElementById('clientePedidosTab').style.display = tab === 'pedidos' ? 'block' : 'none';
+            document.getElementById('categoriasFilter').style.display = tab === 'productos' ? 'flex' : 'none';
             
             if (tab === 'pedidos') {
                 mostrarPedidosCliente();
+            } else if (tab === 'productos') {
+                mostrarProductos();
             }
+        }
+
+        function filtrarPorCategoria(categoria) {
+            categoriaActual = categoria;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.categoria-btn').forEach(btn => {
+                btn.style.background = '#f0f0f0';
+                btn.style.color = '#333';
+            });
+            event.target.style.background = '#667eea';
+            event.target.style.color = 'white';
+            
+            mostrarProductos();
         }
 
         function mostrarPedidosCliente() {
