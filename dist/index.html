@@ -542,6 +542,14 @@
                     </div>
                 </div>
 
+                <!-- Stock Tab -->
+                <div id="stockTab" class="admin-content">
+                    <div class="admin-section">
+                        <h3>Gestión de Stock</h3>
+                        <div id="stockList" style="display: grid; gap: 15px;"></div>
+                    </div>
+                </div>
+
                 <!-- Pedidos Tab -->
                 <div id="pedidosTab" class="admin-content">
                     <div class="admin-section">
@@ -742,20 +750,20 @@
         let currentUser = null;
         let currentCategory = 'nieves';
 
-        // Default products
+        // Default products with stock
         const DEFAULT_PRODUCTS = [
-            { id: 1, category: 'nieves', name: 'Nieves de Vaso', price: 25, wholesalePrice: 20, minWholesale: 10, image: '🍨', desc: 'Deliciosas nieves en vaso' },
-            { id: 2, category: 'nieves', name: 'Raspa Chaguitos', price: 15, wholesalePrice: 12, minWholesale: 10, image: '🍧', desc: 'Raspa refrescante' },
-            { id: 3, category: 'nieves', name: 'Paletas de Crema', price: 10, wholesalePrice: 8, minWholesale: 15, image: '🍦', desc: 'Paletas cremosas' },
-            { id: 4, category: 'abarrotes', name: 'Arroz', price: 35, wholesalePrice: 28, minWholesale: 5, image: '🌾', desc: 'Arroz de calidad' },
-            { id: 5, category: 'abarrotes', name: 'Frijoles', price: 20, wholesalePrice: 16, minWholesale: 5, image: '🫘', desc: 'Frijoles frescos' },
-            { id: 6, category: 'abarrotes', name: 'Aceite', price: 40, wholesalePrice: 32, minWholesale: 3, image: '🫗', desc: 'Aceite puro' },
-            { id: 7, category: 'papeleria', name: 'Cuaderno', price: 15, wholesalePrice: 12, minWholesale: 20, image: '📓', desc: 'Cuaderno 100 hojas' },
-            { id: 8, category: 'papeleria', name: 'Lápices', price: 5, wholesalePrice: 4, minWholesale: 50, image: '✏️', desc: 'Lápices HB' },
-            { id: 9, category: 'papeleria', name: 'Bolígrafos', price: 7.50, wholesalePrice: 6, minWholesale: 30, image: '🖊️', desc: 'Bolígrafos azules' },
-            { id: 10, category: 'arabela', name: 'Producto Arabela 1', price: 50, wholesalePrice: 40, minWholesale: 5, image: '✨', desc: 'Producto premium Arabela' },
-            { id: 11, category: 'arabela', name: 'Producto Arabela 2', price: 75, wholesalePrice: 60, minWholesale: 3, image: '💎', desc: 'Producto exclusivo Arabela' },
-            { id: 12, category: 'arabela', name: 'Producto Arabela 3', price: 100, wholesalePrice: 80, minWholesale: 2, image: '👑', desc: 'Producto de lujo Arabela' }
+            { id: 1, category: 'nieves', name: 'Nieves de Vaso', price: 25, wholesalePrice: 20, minWholesale: 10, image: '🍨', desc: 'Deliciosas nieves en vaso', stock: 100 },
+            { id: 2, category: 'nieves', name: 'Raspa Chaguitos', price: 15, wholesalePrice: 12, minWholesale: 10, image: '🍧', desc: 'Raspa refrescante', stock: 80 },
+            { id: 3, category: 'nieves', name: 'Paletas de Crema', price: 10, wholesalePrice: 8, minWholesale: 15, image: '🍦', desc: 'Paletas cremosas', stock: 120 },
+            { id: 4, category: 'abarrotes', name: 'Arroz', price: 35, wholesalePrice: 28, minWholesale: 5, image: '🌾', desc: 'Arroz de calidad', stock: 50 },
+            { id: 5, category: 'abarrotes', name: 'Frijoles', price: 20, wholesalePrice: 16, minWholesale: 5, image: '🫘', desc: 'Frijoles frescos', stock: 60 },
+            { id: 6, category: 'abarrotes', name: 'Aceite', price: 40, wholesalePrice: 32, minWholesale: 3, image: '🫗', desc: 'Aceite puro', stock: 40 },
+            { id: 7, category: 'papeleria', name: 'Cuaderno', price: 15, wholesalePrice: 12, minWholesale: 20, image: '📓', desc: 'Cuaderno 100 hojas', stock: 200 },
+            { id: 8, category: 'papeleria', name: 'Lápices', price: 5, wholesalePrice: 4, minWholesale: 50, image: '✏️', desc: 'Lápices HB', stock: 500 },
+            { id: 9, category: 'papeleria', name: 'Bolígrafos', price: 7.50, wholesalePrice: 6, minWholesale: 30, image: '🖊️', desc: 'Bolígrafos azules', stock: 300 },
+            { id: 10, category: 'arabela', name: 'Producto Arabela 1', price: 50, wholesalePrice: 40, minWholesale: 5, image: '✨', desc: 'Producto premium Arabela', stock: 30 },
+            { id: 11, category: 'arabela', name: 'Producto Arabela 2', price: 75, wholesalePrice: 60, minWholesale: 3, image: '💎', desc: 'Producto exclusivo Arabela', stock: 20 },
+            { id: 12, category: 'arabela', name: 'Producto Arabela 3', price: 100, wholesalePrice: 80, minWholesale: 2, image: '👑', desc: 'Producto de lujo Arabela', stock: 15 }
         ];
 
 
@@ -788,6 +796,37 @@
             return wishlist.includes(productId);
         }
 
+        // Stock Management Functions
+        function loadStock() {
+            const saved = localStorage.getItem('stock');
+            if (!saved) {
+                const stock = {};
+                products.forEach(p => stock[p.id] = p.stock);
+                localStorage.setItem('stock', JSON.stringify(stock));
+            }
+        }
+
+        function getStock(productId) {
+            const stock = JSON.parse(localStorage.getItem('stock') || '{}');
+            return stock[productId] || 0;
+        }
+
+        function updateStock(productId, quantity) {
+            const stock = JSON.parse(localStorage.getItem('stock') || '{}');
+            stock[productId] = (stock[productId] || 0) - quantity;
+            localStorage.setItem('stock', JSON.stringify(stock));
+        }
+
+        function restoreStock(productId, quantity) {
+            const stock = JSON.parse(localStorage.getItem('stock') || '{}');
+            stock[productId] = (stock[productId] || 0) + quantity;
+            localStorage.setItem('stock', JSON.stringify(stock));
+        }
+
+        function hasStock(productId, quantity) {
+            return getStock(productId) >= quantity;
+        }
+
         // Calculate total with wholesale pricing
         function calculateTotal(cartItems) {
             return cartItems.reduce((sum, item) => {
@@ -799,9 +838,14 @@
 
         // Create product HTML element
         function createProductHTML(product, includeWishlist = true) {
+            const stock = getStock(product.id);
+            const stockStatus = stock > 10 ? `<span style="color: #4caf50;">✅ ${stock} en stock</span>` : 
+                               stock > 0 ? `<span style="color: #ff9800;">⚠️ Solo ${stock} disponibles</span>` : 
+                               `<span style="color: #f44336;">❌ Agotado</span>`;
             const wholesaleInfo = `<div style="font-size: 0.85em; color: #2B9EB3; margin-top: 5px;">💰 Mayoreo: $${product.wholesalePrice.toFixed(2)} (mín. ${product.minWholesale} unidades)</div>`;
             const wishlistIcon = includeWishlist && isInWishlist(product.id) ? '❤️' : '🤍';
             const wishlistBtn = includeWishlist ? `<button style="background: none; border: none; font-size: 1.5em; cursor: pointer;" onclick="toggleWishlist(${product.id})">${wishlistIcon}</button>` : '';
+            const isOutOfStock = stock === 0;
             
             return `
                 <div class="product">
@@ -811,14 +855,17 @@
                     </div>
                     <div class="product-name">${product.name}</div>
                     <div class="product-price">$${product.price.toFixed(2)}</div>
+                    <div style="font-size: 0.85em; margin-top: 5px; margin-bottom: 5px;">${stockStatus}</div>
                     ${wholesaleInfo}
                     <div class="product-desc">${product.desc}</div>
                     <div class="product-quantity">
                         <button class="quantity-btn" onclick="changeQty(${product.id}, -1)">-</button>
-                        <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
+                        <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1" max="${stock}">
                         <button class="quantity-btn" onclick="changeQty(${product.id}, 1)">+</button>
                     </div>
-                    <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
+                    <button class="btn" onclick="addToCart(${product.id})" ${isOutOfStock ? 'disabled' : ''}>
+                        ${isOutOfStock ? 'Agotado' : 'Agregar al Carrito'}
+                    </button>
                 </div>
             `;
         }
@@ -850,6 +897,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             try {
                 loadProducts();
+                loadStock();
                 loadWishlist();
                 const user = localStorage.getItem('currentUser');
                 if (user) {
