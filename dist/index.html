@@ -518,7 +518,7 @@
                 <div class="auth-buttons">
                     <span id="userInfo" class="user-info" style="display: none;"></span>
                     <button id="profileBtn" class="auth-btn login-btn" onclick="showProfile()" style="display: none;">Mi Perfil</button>
-                    <button id="adminBtn" class="auth-btn admin-btn" onclick="showAdmin()" style="display: none;">Admin</button>
+                    <button id="adminBtn" class="auth-btn admin-btn" onclick="showAdmin()" style="display: none !important;">Admin</button>
                     <button id="loginBtn" class="auth-btn login-btn" onclick="showLoginModal()">Iniciar Sesión</button>
                     <button id="registerBtn" class="auth-btn register-btn" onclick="showRegisterModal()">Registrarse</button>
                     <button id="logoutBtn" class="auth-btn logout-btn" onclick="logout()" style="display: none;">Cerrar Sesión</button>
@@ -1112,7 +1112,7 @@
             console.log('User email:', user.email);
             if (user.email === 'gutierrezmayra669@gmail.com') {
                 console.log('Admin detected!');
-                document.getElementById('adminBtn').style.display = 'block';
+                document.getElementById('adminBtn').style.setProperty('display', 'block', 'important');
             } else {
                 console.log('Not admin');
             }
