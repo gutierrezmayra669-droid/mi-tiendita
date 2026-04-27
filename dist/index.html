@@ -862,15 +862,22 @@
             if (cart.length === 0) {
                 cartItemsDiv.innerHTML = '<p style="text-align: center; color: #666;">Tu carrito está vacío</p>';
             } else {
-                const total = cart.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-                cartItemsDiv.innerHTML = cart.map((item, index) => `
+                let total = 0;
+                cartItemsDiv.innerHTML = cart.map((item, index) => {
+                    // Apply wholesale pricing if quantity meets minimum
+                    const isWholesale = item.quantity >= item.minWholesale;
+                    const effectivePrice = isWholesale ? item.wholesalePrice : item.price;
+                    const subtotal = item.quantity * effectivePrice;
+                    total += subtotal;
+                    const priceLabel = isWholesale ? `$${effectivePrice.toFixed(2)} (Mayoreo)` : `$${effectivePrice.toFixed(2)}`;
+                    return `
                     <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 10px;">
                         <div><strong>${item.image} ${item.name}</strong></div>
-                        <div>Cantidad: ${item.quantity} x $${item.price.toFixed(2)}</div>
-                        <div>Subtotal: $${(item.quantity * item.price).toFixed(2)}</div>
+                        <div>Cantidad: ${item.quantity} x ${priceLabel}</div>
+                        <div>Subtotal: $${subtotal.toFixed(2)}</div>
                         <button class="delete-btn" style="margin-top: 10px;" onclick="removeFromCart(${index})">Eliminar</button>
                     </div>
-                `).join('');
+                `}).join('');
                 cartItemsDiv.innerHTML += `<div style="background: white; padding: 15px; border-radius: 5px; text-align: right; font-weight: bold; color: #667eea; font-size: 1.2em;">Total: $${total.toFixed(2)}</div>`;
             }
             document.getElementById('cartModal').classList.add('show');
@@ -892,7 +899,11 @@
                 showNotification('Tu carrito está vacío');
                 return;
             }
-            const total = cart.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            const total = cart.reduce((sum, item) => {
+                const isWholesale = item.quantity >= item.minWholesale;
+                const effectivePrice = isWholesale ? item.wholesalePrice : item.price;
+                return sum + (item.quantity * effectivePrice);
+            }, 0);
             const order = {
                 id: 'ORD-' + Date.now(),
                 userId: currentUser.email,
