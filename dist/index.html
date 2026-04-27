@@ -456,7 +456,7 @@
                 <button id="loginBtn" class="auth-btn login-btn" onclick="showLoginModal()">Iniciar Sesión</button>
                 <button id="registerBtn" class="auth-btn register-btn" onclick="showRegisterModal()">Registrarse</button>
                 <button id="logoutBtn" class="auth-btn logout-btn" onclick="logout()" style="display: none;">Cerrar Sesión</button>
-                <a href="https://wa.me/5215555555555?text=Hola%20Mi%20Tiendita" target="_blank" class="auth-btn" style="background: #25D366; color: white; text-decoration: none;">💬 WhatsApp</a>
+                <a href="https://wa.me/526562853574?text=Hola%20Mi%20Tiendita" target="_blank" class="auth-btn" style="background: #25D366; color: white; text-decoration: none;">💬 WhatsApp</a>
             </div>
         </header>
 
@@ -551,7 +551,7 @@
                         <h3>Configurar WhatsApp</h3>
                         <div class="form-group">
                             <label>Número de WhatsApp (con código de país):</label>
-                            <input type="text" id="whatsappNumber" placeholder="ej: 5215555555555" value="5215555555555">
+                            <input type="text" id="whatsappNumber" placeholder="ej: 526562853574" value="526562853574">
                         </div>
                         <div class="form-group">
                             <label>
@@ -855,7 +855,7 @@
 
         function sendWhatsAppNotification(order) {
             const message = `Nuevo pedido confirmado!\n\nID: ${order.id}\nCliente: ${currentUser.name}\nTotal: $${order.total.toFixed(2)}\nProductos: ${order.items.map(i => i.name + ' x' + i.quantity).join(', ')}\n\nEstado: Pendiente`;
-            const whatsappUrl = `https://wa.me/5215555555555?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/526562853574?text=${encodeURIComponent(message)}`;
             // Open WhatsApp in new tab
             window.open(whatsappUrl, '_blank');
         }
@@ -1115,7 +1115,7 @@
 
 
         function loadWhatsAppConfig() {
-            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "5215555555555", "notifications": true}');
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "notifications": true}');
             document.getElementById('whatsappNumber').value = config.number;
             document.getElementById('whatsappNotifications').checked = config.notifications;
         }
@@ -1130,7 +1130,7 @@
         }
 
         function getWhatsAppNumber() {
-            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "5215555555555"}');
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574"}');
             return config.number;
         }
 
