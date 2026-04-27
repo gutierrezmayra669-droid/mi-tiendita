@@ -1000,6 +1000,12 @@
 
         window.addEventListener('DOMContentLoaded', function() {
             try {
+                // Set timeout to prevent infinite loops
+                const initTimeout = setTimeout(() => {
+                    console.error('❌ Initialization timeout - store may be frozen');
+                    location.reload();
+                }, 10000);
+                
                 // Initialize authentication system
                 AuthManager.init();
                 
@@ -1018,9 +1024,20 @@
                 
                 renderProducts();
                 loadCart();
+                
+                // Clear timeout if everything loaded successfully
+                clearTimeout(initTimeout);
+                console.log('✅ Store initialized successfully');
             } catch (error) {
                 console.error('Error initializing store:', error);
-                showNotification('Error al cargar la tienda');
+                // Clear localStorage if corrupted
+                try {
+                    localStorage.clear();
+                    location.reload();
+                } catch (e) {
+                    showNotification('Error al cargar la tienda. Recargando...');
+                    setTimeout(() => location.reload(), 2000);
+                }
             }
         });
 
@@ -1041,9 +1058,20 @@
 
 
         function renderProducts() {
-            const filtered = products.filter(p => p.category === currentCategory);
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = filtered.map(product => createProductHTML(product, true)).join('');
+            try {
+                if (!products || products.length === 0) {
+                    console.warn('⚠️ No products available');
+                    return;
+                }
+                
+                const filtered = products.filter(p => p.category === currentCategory);
+                const container = document.getElementById('productsContainer');
+                if (!container) return;
+                
+                container.innerHTML = filtered.map(product => createProductHTML(product, true)).join('');
+            } catch (error) {
+                console.error('Error rendering products:', error);
+            }
         }
 
         function changeQty(productId, change) {
