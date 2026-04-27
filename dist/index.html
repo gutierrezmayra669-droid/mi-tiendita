@@ -467,7 +467,6 @@
                 <div class="category-tab" onclick="filterByCategory('abarrotes')">🥫 Abarrotes</div>
                 <div class="category-tab" onclick="filterByCategory('papeleria')">📚 Papelería</div>
                 <div class="category-tab" onclick="filterByCategory('arabela')">✨ Arabela</div>
-                <div class="category-tab" onclick="filterByCategory('mayoreo')">💼 Mayoreo</div>
             </div>
             <div class="products" id="productsContainer"></div>
             <footer>
@@ -783,28 +782,20 @@
         }
 
         function renderProducts() {
-            let filtered;
-            if (currentCategory === 'mayoreo') {
-                filtered = products;
-            } else {
-                filtered = products.filter(p => p.category === currentCategory);
-            }
+            const filtered = products.filter(p => p.category === currentCategory);
             const container = document.getElementById('productsContainer');
             container.innerHTML = filtered.map(product => {
-                const displayPrice = currentCategory === 'mayoreo' ? product.wholesalePrice : product.price;
-                const priceLabel = currentCategory === 'mayoreo' ? `Precio Mayoreo: $${displayPrice.toFixed(2)}` : `$${displayPrice.toFixed(2)}`;
-                const wholesaleInfo = currentCategory === 'mayoreo' ? `<div style="font-size: 0.85em; color: #666; margin-top: 5px;">Minimo: ${product.minWholesale} unidades</div>` : '';
-                const minQty = currentCategory === 'mayoreo' ? product.minWholesale : 1;
+                const wholesaleInfo = `<div style="font-size: 0.85em; color: #2B9EB3; margin-top: 5px;">💰 Mayoreo: $${product.wholesalePrice.toFixed(2)} (mín. ${product.minWholesale} unidades)</div>`;
                 return `
                 <div class="product">
                     <div class="product-image">${product.image}</div>
                     <div class="product-name">${product.name}</div>
-                    <div class="product-price">${priceLabel}</div>
+                    <div class="product-price">$${product.price.toFixed(2)}</div>
                     ${wholesaleInfo}
                     <div class="product-desc">${product.desc}</div>
                     <div class="product-quantity">
                         <button class="quantity-btn" onclick="changeQty(${product.id}, -1)">-</button>
-                        <input type="number" class="quantity-input" id="qty-${product.id}" value="${minQty}" min="${minQty}">
+                        <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
                         <button class="quantity-btn" onclick="changeQty(${product.id}, 1)">+</button>
                     </div>
                     <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
