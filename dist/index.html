@@ -323,7 +323,37 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        .admin-section {
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .admin-tab {
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .admin-tab:hover {
+            color: #667eea;
+        }
+        .admin-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .admin-content {
+            display: none;
+        }
+        .admin-content.active {
+            display: block;
+        }
+                .admin-section {
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 1px solid #ddd;
@@ -457,9 +487,18 @@
                 <h2 style="color: #667eea; margin-bottom: 20px;">Panel de Administrador</h2>
                 <button class="auth-btn login-btn" onclick="showHome()" style="margin-bottom: 20px;">Volver a Inicio</button>
                 
-                <!-- Add Product Section -->
-                <div class="admin-section">
-                    <h3>Agregar Nuevo Producto</h3>
+                <!-- Admin Tabs -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchAdminTab('editar')">✏️ Editar Productos</button>
+                    <button class="admin-tab" onclick="switchAdminTab('pedidos')">📦 Pedidos</button>
+                    <button class="admin-tab" onclick="switchAdminTab('pago')">💳 Métodos de Pago</button>
+                </div>
+
+                <!-- Editar Tab -->
+                <div id="editarTab" class="admin-content active">
+                    <!-- Add Product Section -->
+                    <div class="admin-section">
+                        <h3>Agregar Nuevo Producto</h3>
                     <form onsubmit="addProduct(event)">
                         <div class="form-group">
                             <label>Categoría:</label>
@@ -489,10 +528,36 @@
                     </form>
                 </div>
 
-                <!-- Products Management Section -->
-                <div class="admin-section">
-                    <h3>Gestionar Productos</h3>
-                    <div id="adminProductsList"></div>
+                    <!-- Products Management Section -->
+                    <div class="admin-section">
+                        <h3>Gestionar Productos</h3>
+                        <div id="adminProductsList"></div>
+                    </div>
+                </div>
+
+                <!-- Pedidos Tab -->
+                <div id="pedidosTab" class="admin-content">
+                    <div class="admin-section">
+                        <h3>Pedidos de Clientes</h3>
+                        <div id="adminOrdersList"></div>
+                    </div>
+                </div>
+
+                <!-- Métodos de Pago Tab -->
+                <div id="pagoTab" class="admin-content">
+                    <div class="admin-section">
+                        <h3>Configurar Métodos de Pago</h3>
+                        <div class="form-group">
+                            <label><input type="checkbox" id="paymentMercadoPago" checked> Mercado Pago</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" id="paymentEfectivo" checked> Efectivo</label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" id="paymentTransferencia"> Transferencia Bancaria</label>
+                        </div>
+                        <button class="submit-btn" onclick="savePaymentMethods()">Guardar Métodos de Pago</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -596,15 +661,15 @@
 
         // Default products
         const DEFAULT_PRODUCTS = [
-            { id: 1, category: 'nieves', name: 'Nieves de Vaso', price: 2.50, image: '🍨', desc: 'Deliciosas nieves en vaso' },
-            { id: 2, category: 'nieves', name: 'Raspa Chaguitos', price: 1.50, image: '🍧', desc: 'Raspa refrescante' },
-            { id: 3, category: 'nieves', name: 'Paletas de Crema', price: 1.00, image: '🍦', desc: 'Paletas cremosas' },
-            { id: 4, category: 'abarrotes', name: 'Arroz', price: 3.50, image: '🌾', desc: 'Arroz de calidad' },
-            { id: 5, category: 'abarrotes', name: 'Frijoles', price: 2.00, image: '🫘', desc: 'Frijoles frescos' },
-            { id: 6, category: 'abarrotes', name: 'Aceite', price: 4.00, image: '🫗', desc: 'Aceite puro' },
-            { id: 7, category: 'papeleria', name: 'Cuaderno', price: 1.50, image: '📓', desc: 'Cuaderno 100 hojas' },
-            { id: 8, category: 'papeleria', name: 'Lápices', price: 0.50, image: '✏️', desc: 'Lápices HB' },
-            { id: 9, category: 'papeleria', name: 'Bolígrafos', price: 0.75, image: '🖊️', desc: 'Bolígrafos azules' }
+            { id: 1, category: 'nieves', name: 'Nieves de Vaso', price: 25, image: '🍨', desc: 'Deliciosas nieves en vaso' },
+            { id: 2, category: 'nieves', name: 'Raspa Chaguitos', price: 15, image: '🍧', desc: 'Raspa refrescante' },
+            { id: 3, category: 'nieves', name: 'Paletas de Crema', price: 10, image: '🍦', desc: 'Paletas cremosas' },
+            { id: 4, category: 'abarrotes', name: 'Arroz', price: 35, image: '🌾', desc: 'Arroz de calidad' },
+            { id: 5, category: 'abarrotes', name: 'Frijoles', price: 20, image: '🫘', desc: 'Frijoles frescos' },
+            { id: 6, category: 'abarrotes', name: 'Aceite', price: 40, image: '🫗', desc: 'Aceite puro' },
+            { id: 7, category: 'papeleria', name: 'Cuaderno', price: 15, image: '📓', desc: 'Cuaderno 100 hojas' },
+            { id: 8, category: 'papeleria', name: 'Lápices', price: 5, image: '✏️', desc: 'Lápices HB' },
+            { id: 9, category: 'papeleria', name: 'Bolígrafos', price: 7.50, image: '🖊️', desc: 'Bolígrafos azules' }
         ];
 
         window.addEventListener('DOMContentLoaded', function() {
@@ -872,8 +937,69 @@
                 return;
             }
             renderAdminProducts();
+            renderAdminOrders();
+            loadPaymentMethods();
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('adminPage').classList.add('active');
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.admin-content').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        function renderAdminOrders() {
+            const list = document.getElementById('adminOrdersList');
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            if (orders.length === 0) {
+                list.innerHTML = '<p style="color: #666;">No hay pedidos</p>';
+                return;
+            }
+            list.innerHTML = orders.map((order, index) => `
+                <div class="admin-product-item">
+                    <div class="admin-product-info">
+                        <div><strong>Pedido: ${order.id}</strong></div>
+                        <div>Cliente: ${order.userId}</div>
+                        <div>Total: $${order.total.toFixed(2)} | Estado: ${order.status}</div>
+                        <div>Productos: ${order.items.map(i => i.name).join(', ')}</div>
+                    </div>
+                    <div class="admin-product-actions">
+                        <select class="admin-btn-small" style="padding: 8px;" onchange="updateOrderStatus(${index}, this.value)">
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Procesando</option>
+                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completado</option>
+                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateOrderStatus(index, status) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders[index].status = status;
+            localStorage.setItem('orders', JSON.stringify(orders));
+            renderAdminOrders();
+            showNotification('Estado del pedido actualizado');
+        }
+
+        function loadPaymentMethods() {
+            const methods = JSON.parse(localStorage.getItem('paymentMethods') || '{"mercadopago": true, "efectivo": true, "transferencia": false}');
+            document.getElementById('paymentMercadoPago').checked = methods.mercadopago;
+            document.getElementById('paymentEfectivo').checked = methods.efectivo;
+            document.getElementById('paymentTransferencia').checked = methods.transferencia;
+        }
+
+        function savePaymentMethods() {
+            const methods = {
+                mercadopago: document.getElementById('paymentMercadoPago').checked,
+                efectivo: document.getElementById('paymentEfectivo').checked,
+                transferencia: document.getElementById('paymentTransferencia').checked
+            };
+            localStorage.setItem('paymentMethods', JSON.stringify(methods));
+            showNotification('Métodos de pago guardados');
         }
 
         function renderAdminProducts() {
