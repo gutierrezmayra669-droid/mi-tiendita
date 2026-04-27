@@ -1057,19 +1057,64 @@
         }
 
         function showLoginModal() {
-            document.getElementById('loginModal').classList.add('show');
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('show');
+                modal.style.display = 'flex';
+                // Clear previous inputs
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+            }
         }
 
         function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('show');
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+            }
         }
 
         function showRegisterModal() {
-            document.getElementById('registerModal').classList.add('show');
+            const modal = document.getElementById('registerModal');
+            if (modal) {
+                modal.classList.add('show');
+                modal.style.display = 'flex';
+                document.getElementById('registerName').value = '';
+                document.getElementById('registerEmail').value = '';
+                document.getElementById('registerPassword').value = '';
+            }
         }
 
         function closeRegisterModal() {
-            document.getElementById('registerModal').classList.remove('show');
+            const modal = document.getElementById('registerModal');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+            }
+        }
+
+        // Emergency Admin Access
+        function emergencyAdminAccess() {
+            const adminEmail = ADMIN_CONFIG.email;
+            const adminPassword = 'admin123'; // Default password for emergency access
+            
+            // Create or update admin user
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const adminExists = users.find(u => u.email === adminEmail);
+            
+            if (!adminExists) {
+                users.push({ name: 'Administrador', email: adminEmail, password: adminPassword });
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            // Auto-login as admin
+            const adminUser = { name: 'Administrador', email: adminEmail, password: adminPassword };
+            currentUser = adminUser;
+            localStorage.setItem('currentUser', JSON.stringify(adminUser));
+            updateUIForLoggedIn(adminUser);
+            showNotification('✅ Acceso de emergencia activado');
+            showAdminPanel();
         }
 
         function handleLogin(event) {
