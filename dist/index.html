@@ -736,7 +736,73 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // Admin Configuration
+        // Authentication Manager
+        const AuthManager = {
+            // Initialize default admin user
+            init: function() {
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                const adminExists = users.find(u => u.email === ADMIN_CONFIG.email);
+                if (!adminExists) {
+                    users.push({
+                        name: 'Administrador',
+                        email: ADMIN_CONFIG.email,
+                        password: 'admin123',
+                        isAdmin: true
+                    });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    console.log('✅ Admin user initialized');
+                }
+            },
+            
+            // Register new user
+            register: function(name, email, password) {
+                if (!name || !email || !password) {
+                    return { success: false, message: 'Todos los campos son requeridos' };
+                }
+                
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (users.find(u => u.email === email)) {
+                    return { success: false, message: 'El email ya está registrado' };
+                }
+                
+                users.push({ name, email, password, isAdmin: false });
+                localStorage.setItem('users', JSON.stringify(users));
+                return { success: true, message: 'Registro exitoso' };
+            },
+            
+            // Login user
+            login: function(email, password) {
+                if (!email || !password) {
+                    return { success: false, message: 'Email y contraseña requeridos' };
+                }
+                
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (!user) {
+                    return { success: false, message: 'Email o contraseña incorrectos' };
+                }
+                
+                const sessionUser = { name: user.name, email: user.email, isAdmin: user.isAdmin };
+                localStorage.setItem('currentUser', JSON.stringify(sessionUser));
+                return { success: true, user: sessionUser };
+            },
+            
+            // Logout user
+            logout: function() {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                return { success: true };
+            },
+            
+            // Get current session
+            getCurrentSession: function() {
+                const saved = localStorage.getItem('currentUser');
+                return saved ? JSON.parse(saved) : null;
+            }
+        };
+        
+                // Admin Configuration
         const ADMIN_CONFIG = {
             email: 'gutierrezmayra669@gmail.com',
             isAdmin: function(userEmail) {
@@ -896,14 +962,22 @@
 
         window.addEventListener('DOMContentLoaded', function() {
             try {
+                // Initialize authentication system
+                AuthManager.init();
+                
                 loadProducts();
                 loadStock();
                 loadWishlist();
-                const user = localStorage.getItem('currentUser');
-                if (user) {
-                    currentUser = JSON.parse(user);
+                
+                // Restore session if exists
+                const session = AuthManager.getCurrentSession();
+                if (session) {
+                    currentUser = session;
                     updateUIForLoggedIn(currentUser);
+                } else {
+                    updateUIForLoggedOut();
                 }
+                
                 renderProducts();
                 loadCart();
             } catch (error) {
@@ -1183,8 +1257,7 @@
             document.getElementById('registerBtn').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'none';
             document.getElementById('profileBtn').style.display = 'none';
-            // Keep admin button visible for emergency access
-            document.getElementById('adminBtn').style.setProperty('display', 'block', 'important');
+            document.getElementById('adminBtn').style.display = 'none';
         }
 
         function showHome() {
