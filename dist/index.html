@@ -494,6 +494,7 @@
                     <button class="admin-tab" onclick="switchAdminTab('pedidos')">📦 Pedidos</button>
                     <button class="admin-tab" onclick="switchAdminTab('pago')">💳 Métodos de Pago</button>
                     <button class="admin-tab" onclick="switchAdminTab('whatsapp')">💬 WhatsApp</button>
+                    <button class="admin-tab" onclick="switchAdminTab('faq')">❓ Respuestas Automáticas</button>
                 </div>
 
                 <!-- Editar Tab -->
@@ -593,6 +594,41 @@
                         <button class="submit-btn" onclick="savePaymentMethods()">Guardar Métodos de Pago</button>
                     </div>
                 </div>
+
+                <!-- FAQ/Auto-Reply Tab -->
+                <div id="faqTab" class="admin-content" style="display: none;">
+                    <div class="admin-section">
+                        <h3>Configurar Respuestas Automáticas</h3>
+                        <p style="color: #666; margin-bottom: 20px;">Gestiona las respuestas automáticas para preguntas frecuentes en WhatsApp Business.</p>
+                        
+                        <!-- Add New FAQ -->
+                        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                            <h4 style="margin-bottom: 15px;">➕ Agregar Nueva Respuesta Automática</h4>
+                            <div class="form-group">
+                                <label>Palabra clave (trigger):</label>
+                                <input type="text" id="faqKeyword" placeholder="ej: horarios, precios, envío" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <small style="color: #666; display: block; margin-top: 5px;">Cuando el cliente escriba esta palabra, se enviará la respuesta automática</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Respuesta automática:</label>
+                                <textarea id="faqResponse" placeholder="Escribe la respuesta que se enviará automáticamente..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px; font-family: Arial, sans-serif;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="faqActive" checked> Respuesta activa
+                                </label>
+                            </div>
+                            <button class="submit-btn" onclick="addFAQ()">Guardar Respuesta Automática</button>
+                        </div>
+                        
+                        <!-- FAQ List -->
+                        <div>
+                            <h4 style="margin-bottom: 15px;">📋 Respuestas Configuradas</h4>
+                            <div id="faqList" style="display: grid; gap: 15px;"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -870,10 +906,30 @@
         }
 
         function sendWhatsAppNotification(order) {
-            const message = `Nuevo pedido confirmado!\n\nID: ${order.id}\nCliente: ${currentUser.name}\nTotal: $${order.total.toFixed(2)}\nProductos: ${order.items.map(i => i.name + ' x' + i.quantity).join(', ')}\n\nEstado: Pendiente`;
-            const whatsappUrl = `https://wa.me/526562853574?text=${encodeURIComponent(message)}`;
-            // Open WhatsApp in new tab
-            window.open(whatsappUrl, '_blank');
+            const whatsappNumber = getWhatsAppNumber();
+            const productsList = order.items.map(i => `${i.name} x${i.quantity} = $${(i.price * i.quantity).toFixed(2)}`).join('\n');
+            const message = `🛒 *NUEVO PEDIDO CONFIRMADO*\n\n📦 ID Pedido: ${order.id}\n👤 Cliente: ${currentUser.name}\n📧 Email: ${currentUser.email}\n\n📋 *Productos:*\n${productsList}\n\n💰 *Total: $${order.total.toFixed(2)} MXN*\n\n✅ Estado: Pendiente\n⏰ Fecha: ${new Date().toLocaleString('es-MX')}`;
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Send automatically using fetch (background)
+            fetch(whatsappUrl, {method: 'GET'}).catch(() => {});
+            
+            // Also try to open in new tab for user confirmation
+            setTimeout(() => {
+                window.open(whatsappUrl, '_blank', 'width=800,height=600');
+            }, 500);
+        }
+        
+        function sendAutoReplyFromFAQ(userMessage) {
+            const autoReply = checkFAQKeyword(userMessage);
+            if (autoReply) {
+                const whatsappNumber = getWhatsAppNumber();
+                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(autoReply)}`;
+                window.open(whatsappUrl, '_blank', 'width=800,height=600');
+                showNotification('✅ Respuesta automática preparada');
+                return true;
+            }
+            return false;
         }
 
         function showLoginModal() {
@@ -995,6 +1051,11 @@
             document.querySelectorAll('.admin-content').forEach(el => el.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(tab + 'Tab').classList.add('active');
+            
+            // Load FAQ list when FAQ tab is opened
+            if (tab === 'faq') {
+                loadFAQList();
+            }
         }
 
         function renderAdminOrders() {
@@ -1176,6 +1237,117 @@
             const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"businessMode": true}');
             return config.businessMode;
         }
+
+        // ==================== FAQ/AUTO-REPLY FUNCTIONS ====================
+        
+        function loadFAQList() {
+            const faqs = JSON.parse(localStorage.getItem('faqs') || '[]');
+            const faqList = document.getElementById('faqList');
+            if (!faqList) return;
+            faqList.innerHTML = '';
+            
+            if (faqs.length === 0) {
+                faqList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No hay respuestas automáticas configuradas aún</p>';
+                return;
+            }
+            
+            faqs.forEach((faq, index) => {
+                const faqCard = document.createElement('div');
+                faqCard.style.cssText = 'background: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);';
+                
+                const statusBadge = faq.active ? '✅ Activa' : '❌ Inactiva';
+                const statusColor = faq.active ? '#4caf50' : '#ff9800';
+                
+                faqCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <strong style="font-size: 1.1em; color: #333;">🔑 ${faq.keyword}</strong>
+                            <span style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.85em; margin-left: 10px;">${statusBadge}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="editFAQ(${index})" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">✏️ Editar</button>
+                            <button onclick="deleteFAQ(${index})" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                    <p style="color: #666; margin: 10px 0; line-height: 1.5; white-space: pre-wrap;">${faq.response}</p>
+                `;
+                
+                faqList.appendChild(faqCard);
+            });
+        }
+        
+        function addFAQ() {
+            const keyword = document.getElementById('faqKeyword').value.trim().toLowerCase();
+            const response = document.getElementById('faqResponse').value.trim();
+            const active = document.getElementById('faqActive').checked;
+            
+            if (!keyword || !response) {
+                showNotification('❌ Por favor completa la palabra clave y la respuesta');
+                return;
+            }
+            
+            const faqs = JSON.parse(localStorage.getItem('faqs') || '[]');
+            
+            if (faqs.some(f => f.keyword === keyword)) {
+                showNotification('⚠️ Esta palabra clave ya existe');
+                return;
+            }
+            
+            faqs.push({
+                keyword: keyword,
+                response: response,
+                active: active,
+                createdAt: new Date().toISOString()
+            });
+            
+            localStorage.setItem('faqs', JSON.stringify(faqs));
+            
+            document.getElementById('faqKeyword').value = '';
+            document.getElementById('faqResponse').value = '';
+            document.getElementById('faqActive').checked = true;
+            
+            loadFAQList();
+            showNotification('✅ Respuesta automática guardada correctamente');
+        }
+        
+        function editFAQ(index) {
+            const faqs = JSON.parse(localStorage.getItem('faqs') || '[]');
+            const faq = faqs[index];
+            
+            document.getElementById('faqKeyword').value = faq.keyword;
+            document.getElementById('faqResponse').value = faq.response;
+            document.getElementById('faqActive').checked = faq.active;
+            
+            faqs.splice(index, 1);
+            localStorage.setItem('faqs', JSON.stringify(faqs));
+            loadFAQList();
+            
+            showNotification('✏️ Edita la respuesta y guarda nuevamente');
+        }
+        
+        function deleteFAQ(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta respuesta automática?')) {
+                const faqs = JSON.parse(localStorage.getItem('faqs') || '[]');
+                faqs.splice(index, 1);
+                localStorage.setItem('faqs', JSON.stringify(faqs));
+                loadFAQList();
+                showNotification('🗑️ Respuesta automática eliminada');
+            }
+        }
+        
+        function checkFAQKeyword(userMessage) {
+            const faqs = JSON.parse(localStorage.getItem('faqs') || '[]');
+            const messageLower = userMessage.toLowerCase();
+            
+            for (let faq of faqs) {
+                if (faq.active && messageLower.includes(faq.keyword)) {
+                    return faq.response;
+                }
+            }
+            return null;
+        }
+        
+        // ==================== END FAQ FUNCTIONS ====================
 
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal');
