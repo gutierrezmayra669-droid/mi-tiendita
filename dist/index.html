@@ -728,7 +728,15 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        let products = [];
+        // Admin Configuration
+        const ADMIN_CONFIG = {
+            email: 'gutierrezmayra669@gmail.com',
+            isAdmin: function(userEmail) {
+                return userEmail === this.email;
+            }
+        };
+        
+                let products = [];
         let cart = [];
         let wishlist = [];
         let currentUser = null;
@@ -750,8 +758,6 @@
             { id: 12, category: 'arabela', name: 'Producto Arabela 3', price: 100, wholesalePrice: 80, minWholesale: 2, image: '👑', desc: 'Producto de lujo Arabela' }
         ];
 
-        // Wholesale category
-        const WHOLESALE_CATEGORY = 'mayoreo';
 
         // Wishlist functionality
         function loadWishlist() {
@@ -782,6 +788,41 @@
             return wishlist.includes(productId);
         }
 
+        // Calculate total with wholesale pricing
+        function calculateTotal(cartItems) {
+            return cartItems.reduce((sum, item) => {
+                const isWholesale = item.quantity >= item.minWholesale;
+                const effectivePrice = isWholesale ? item.wholesalePrice : item.price;
+                return sum + (item.quantity * effectivePrice);
+            }, 0);
+        }
+
+        // Create product HTML element
+        function createProductHTML(product, includeWishlist = true) {
+            const wholesaleInfo = `<div style="font-size: 0.85em; color: #2B9EB3; margin-top: 5px;">💰 Mayoreo: $${product.wholesalePrice.toFixed(2)} (mín. ${product.minWholesale} unidades)</div>`;
+            const wishlistIcon = includeWishlist && isInWishlist(product.id) ? '❤️' : '🤍';
+            const wishlistBtn = includeWishlist ? `<button style="background: none; border: none; font-size: 1.5em; cursor: pointer;" onclick="toggleWishlist(${product.id})">${wishlistIcon}</button>` : '';
+            
+            return `
+                <div class="product">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div class="product-image">${product.image}</div>
+                        ${wishlistBtn}
+                    </div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">$${product.price.toFixed(2)}</div>
+                    ${wholesaleInfo}
+                    <div class="product-desc">${product.desc}</div>
+                    <div class="product-quantity">
+                        <button class="quantity-btn" onclick="changeQty(${product.id}, -1)">-</button>
+                        <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
+                        <button class="quantity-btn" onclick="changeQty(${product.id}, 1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
+                </div>
+            `;
+        }
+
         // Search functionality
         function searchProducts() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -793,24 +834,7 @@
             if (filtered.length === 0) {
                 container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No se encontraron productos</p>';
             } else {
-                container.innerHTML = filtered.map(product => {
-                    const wholesaleInfo = `<div style="font-size: 0.85em; color: #2B9EB3; margin-top: 5px;">💰 Mayoreo: $${product.wholesalePrice.toFixed(2)} (mín. ${product.minWholesale} unidades)</div>`;
-                    return `
-                    <div class="product">
-                        <div class="product-image">${product.image}</div>
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
-                        ${wholesaleInfo}
-                        <div class="product-desc">${product.desc}</div>
-                        <div class="product-quantity">
-                            <button class="quantity-btn" onclick="changeQty(${product.id}, -1)">-</button>
-                            <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
-                            <button class="quantity-btn" onclick="changeQty(${product.id}, 1)">+</button>
-                        </div>
-                        <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
-                    </div>
-                `;
-                }).join('');
+                container.innerHTML = filtered.map(product => createProductHTML(product, true)).join('');
             }
         }
 
@@ -824,15 +848,20 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            loadProducts();
-            loadWishlist();
-            const user = localStorage.getItem('currentUser');
-            if (user) {
-                currentUser = JSON.parse(user);
-                updateUIForLoggedIn(currentUser);
+            try {
+                loadProducts();
+                loadWishlist();
+                const user = localStorage.getItem('currentUser');
+                if (user) {
+                    currentUser = JSON.parse(user);
+                    updateUIForLoggedIn(currentUser);
+                }
+                renderProducts();
+                loadCart();
+            } catch (error) {
+                console.error('Error initializing store:', error);
+                showNotification('Error al cargar la tienda');
             }
-            renderProducts();
-            loadCart();
         });
 
         function loadProducts() {
@@ -854,28 +883,7 @@
         function renderProducts() {
             const filtered = products.filter(p => p.category === currentCategory);
             const container = document.getElementById('productsContainer');
-            container.innerHTML = filtered.map(product => {
-                const wholesaleInfo = `<div style="font-size: 0.85em; color: #2B9EB3; margin-top: 5px;">💰 Mayoreo: $${product.wholesalePrice.toFixed(2)} (mín. ${product.minWholesale} unidades)</div>`;
-                const wishlistIcon = isInWishlist(product.id) ? '❤️' : '🤍';
-                return `
-                <div class="product">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div class="product-image">${product.image}</div>
-                        <button style="background: none; border: none; font-size: 1.5em; cursor: pointer;" onclick="toggleWishlist(${product.id})">${wishlistIcon}</button>
-                    </div>
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-price">$${product.price.toFixed(2)}</div>
-                    ${wholesaleInfo}
-                    <div class="product-desc">${product.desc}</div>
-                    <div class="product-quantity">
-                        <button class="quantity-btn" onclick="changeQty(${product.id}, -1)">-</button>
-                        <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
-                        <button class="quantity-btn" onclick="changeQty(${product.id}, 1)">+</button>
-                    </div>
-                    <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
-                </div>
-            `;
-            }).join('');
+            container.innerHTML = filtered.map(product => createProductHTML(product, true)).join('');
         }
 
         function changeQty(productId, change) {
@@ -1071,7 +1079,7 @@
             document.getElementById('logoutBtn').style.display = 'block';
             document.getElementById('profileBtn').style.display = 'block';
             
-            if (user.email === 'gutierrezmayra669@gmail.com') {
+            if (ADMIN_CONFIG.isAdmin(user.email)) {
                 document.getElementById('adminBtn').style.setProperty('display', 'block', 'important');
             }
         }
