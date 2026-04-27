@@ -1109,8 +1109,12 @@
             document.getElementById('logoutBtn').style.display = 'block';
             document.getElementById('profileBtn').style.display = 'block';
             
+            console.log('User email:', user.email);
             if (user.email === 'gutierrezmayra669@gmail.com') {
+                console.log('Admin detected!');
                 document.getElementById('adminBtn').style.display = 'block';
+            } else {
+                console.log('Not admin');
             }
         }
 
