@@ -466,6 +466,8 @@
                 <div class="category-tab active" onclick="filterByCategory('nieves')">🍦 Nieves</div>
                 <div class="category-tab" onclick="filterByCategory('abarrotes')">🥫 Abarrotes</div>
                 <div class="category-tab" onclick="filterByCategory('papeleria')">📚 Papelería</div>
+                <div class="category-tab" onclick="filterByCategory('arabela')">✨ Arabela</div>
+                <div class="category-tab" onclick="filterByCategory('mayoreo')">💼 Mayoreo</div>
             </div>
             <div class="products" id="productsContainer"></div>
             <footer>
@@ -731,16 +733,22 @@
 
         // Default products
         const DEFAULT_PRODUCTS = [
-            { id: 1, category: 'nieves', name: 'Nieves de Vaso', price: 25, image: '🍨', desc: 'Deliciosas nieves en vaso' },
-            { id: 2, category: 'nieves', name: 'Raspa Chaguitos', price: 15, image: '🍧', desc: 'Raspa refrescante' },
-            { id: 3, category: 'nieves', name: 'Paletas de Crema', price: 10, image: '🍦', desc: 'Paletas cremosas' },
-            { id: 4, category: 'abarrotes', name: 'Arroz', price: 35, image: '🌾', desc: 'Arroz de calidad' },
-            { id: 5, category: 'abarrotes', name: 'Frijoles', price: 20, image: '🫘', desc: 'Frijoles frescos' },
-            { id: 6, category: 'abarrotes', name: 'Aceite', price: 40, image: '🫗', desc: 'Aceite puro' },
-            { id: 7, category: 'papeleria', name: 'Cuaderno', price: 15, image: '📓', desc: 'Cuaderno 100 hojas' },
-            { id: 8, category: 'papeleria', name: 'Lápices', price: 5, image: '✏️', desc: 'Lápices HB' },
-            { id: 9, category: 'papeleria', name: 'Bolígrafos', price: 7.50, image: '🖊️', desc: 'Bolígrafos azules' }
+            { id: 1, category: 'nieves', name: 'Nieves de Vaso', price: 25, wholesalePrice: 20, minWholesale: 10, image: '🍨', desc: 'Deliciosas nieves en vaso' },
+            { id: 2, category: 'nieves', name: 'Raspa Chaguitos', price: 15, wholesalePrice: 12, minWholesale: 10, image: '🍧', desc: 'Raspa refrescante' },
+            { id: 3, category: 'nieves', name: 'Paletas de Crema', price: 10, wholesalePrice: 8, minWholesale: 15, image: '🍦', desc: 'Paletas cremosas' },
+            { id: 4, category: 'abarrotes', name: 'Arroz', price: 35, wholesalePrice: 28, minWholesale: 5, image: '🌾', desc: 'Arroz de calidad' },
+            { id: 5, category: 'abarrotes', name: 'Frijoles', price: 20, wholesalePrice: 16, minWholesale: 5, image: '🫘', desc: 'Frijoles frescos' },
+            { id: 6, category: 'abarrotes', name: 'Aceite', price: 40, wholesalePrice: 32, minWholesale: 3, image: '🫗', desc: 'Aceite puro' },
+            { id: 7, category: 'papeleria', name: 'Cuaderno', price: 15, wholesalePrice: 12, minWholesale: 20, image: '📓', desc: 'Cuaderno 100 hojas' },
+            { id: 8, category: 'papeleria', name: 'Lápices', price: 5, wholesalePrice: 4, minWholesale: 50, image: '✏️', desc: 'Lápices HB' },
+            { id: 9, category: 'papeleria', name: 'Bolígrafos', price: 7.50, wholesalePrice: 6, minWholesale: 30, image: '🖊️', desc: 'Bolígrafos azules' },
+            { id: 10, category: 'arabela', name: 'Producto Arabela 1', price: 50, wholesalePrice: 40, minWholesale: 5, image: '✨', desc: 'Producto premium Arabela' },
+            { id: 11, category: 'arabela', name: 'Producto Arabela 2', price: 75, wholesalePrice: 60, minWholesale: 3, image: '💎', desc: 'Producto exclusivo Arabela' },
+            { id: 12, category: 'arabela', name: 'Producto Arabela 3', price: 100, wholesalePrice: 80, minWholesale: 2, image: '👑', desc: 'Producto de lujo Arabela' }
         ];
+
+        // Wholesale category
+        const WHOLESALE_CATEGORY = 'mayoreo';
 
         window.addEventListener('DOMContentLoaded', function() {
             loadProducts();
@@ -775,22 +783,34 @@
         }
 
         function renderProducts() {
-            const filtered = products.filter(p => p.category === currentCategory);
+            let filtered;
+            if (currentCategory === 'mayoreo') {
+                filtered = products;
+            } else {
+                filtered = products.filter(p => p.category === currentCategory);
+            }
             const container = document.getElementById('productsContainer');
-            container.innerHTML = filtered.map(product => `
+            container.innerHTML = filtered.map(product => {
+                const displayPrice = currentCategory === 'mayoreo' ? product.wholesalePrice : product.price;
+                const priceLabel = currentCategory === 'mayoreo' ? `Precio Mayoreo: $${displayPrice.toFixed(2)}` : `$${displayPrice.toFixed(2)}`;
+                const wholesaleInfo = currentCategory === 'mayoreo' ? `<div style="font-size: 0.85em; color: #666; margin-top: 5px;">Minimo: ${product.minWholesale} unidades</div>` : '';
+                const minQty = currentCategory === 'mayoreo' ? product.minWholesale : 1;
+                return `
                 <div class="product">
                     <div class="product-image">${product.image}</div>
                     <div class="product-name">${product.name}</div>
-                    <div class="product-price">$${product.price.toFixed(2)}</div>
+                    <div class="product-price">${priceLabel}</div>
+                    ${wholesaleInfo}
                     <div class="product-desc">${product.desc}</div>
                     <div class="product-quantity">
                         <button class="quantity-btn" onclick="changeQty(${product.id}, -1)">-</button>
-                        <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
+                        <input type="number" class="quantity-input" id="qty-${product.id}" value="${minQty}" min="${minQty}">
                         <button class="quantity-btn" onclick="changeQty(${product.id}, 1)">+</button>
                     </div>
                     <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         function changeQty(productId, change) {
