@@ -456,7 +456,7 @@
                 <button id="loginBtn" class="auth-btn login-btn" onclick="showLoginModal()">Iniciar Sesión</button>
                 <button id="registerBtn" class="auth-btn register-btn" onclick="showRegisterModal()">Registrarse</button>
                 <button id="logoutBtn" class="auth-btn logout-btn" onclick="logout()" style="display: none;">Cerrar Sesión</button>
-                <a href="https://wa.me/526562853574?text=Hola%20Mi%20Tiendita" target="_blank" class="auth-btn" style="background: #25D366; color: white; text-decoration: none;">💬 WhatsApp</a>
+
             </div>
         </header>
 
@@ -495,8 +495,8 @@
                     <button class="admin-tab active" onclick="switchAdminTab('editar')">✏️ Editar Productos</button>
                     <button class="admin-tab" onclick="switchAdminTab('pedidos')">📦 Pedidos</button>
                     <button class="admin-tab" onclick="switchAdminTab('pago')">💳 Métodos de Pago</button>
-                    <button class="admin-tab" onclick="switchAdminTab('whatsapp')">💬 WhatsApp</button>
-                    <button class="admin-tab" onclick="switchAdminTab('faq')">❓ Respuestas Automáticas</button>
+
+
                 </div>
 
                 <!-- Editar Tab -->
@@ -921,31 +921,7 @@
             showNotification('¡Pedido confirmado! ID: ' + order.id);
         }
 
-        function sendWhatsAppNotification(order) {
-            const whatsappNumber = getWhatsAppNumber();
-            const productsList = order.items.map(i => `${i.name} x${i.quantity} = $${(i.price * i.quantity).toFixed(2)}`).join('\n');
-            const message = `🛒 *NUEVO PEDIDO CONFIRMADO*\n\n📦 ID Pedido: ${order.id}\n👤 Cliente: ${currentUser.name}\n📧 Email: ${currentUser.email}\n\n📋 *Productos:*\n${productsList}\n\n💰 *Total: $${order.total.toFixed(2)} MXN*\n\n✅ Estado: Pendiente\n⏰ Fecha: ${new Date().toLocaleString('es-MX')}`;
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-            
-            // Send automatically using fetch (background)
-            fetch(whatsappUrl, {method: 'GET'}).catch(() => {});
-            
-            // Also try to open in new tab for user confirmation
-            setTimeout(() => {
-                window.open(whatsappUrl, '_blank', 'width=800,height=600');
-            }, 500);
-        }
-        
-        function sendAutoReplyFromFAQ(userMessage) {
-            const autoReply = checkFAQKeyword(userMessage);
-            if (autoReply) {
-                const whatsappNumber = getWhatsAppNumber();
-                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(autoReply)}`;
-                window.open(whatsappUrl, '_blank', 'width=800,height=600');
-                showNotification('✅ Respuesta automática preparada');
-                return true;
-            }
-            return false;
+                            return false;
         }
 
         function showLoginModal() {
@@ -1057,7 +1033,7 @@
             renderAdminProducts();
             renderAdminOrders();
             loadPaymentMethods();
-            loadWhatsAppConfig();
+            
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('adminPage').classList.add('active');
         }
@@ -1207,49 +1183,14 @@
         }
 
 
-        function loadWhatsAppConfig() {
-            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "notifications": true, "businessMode": true}');
-            document.getElementById('whatsappNumber').value = config.number;
-            document.getElementById('whatsappNotifications').checked = config.notifications;
-            document.getElementById('whatsappBusinessMode').checked = config.businessMode;
-            updateWhatsAppDisplay();
-        }
-        
-        function updateWhatsAppDisplay() {
+                function updateWhatsAppDisplay() {
             const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "notifications": true, "businessMode": true}');
             document.getElementById('activeWhatsAppNumber').textContent = config.number;
             document.getElementById('activeNotifications').textContent = config.notifications ? '✅ Activadas' : '❌ Desactivadas';
             document.getElementById('activeBusinessMode').textContent = config.businessMode ? '✅ Activado' : '❌ Desactivado';
         }
 
-        function saveWhatsAppConfig() {
-            const config = {
-                number: document.getElementById('whatsappNumber').value,
-                notifications: document.getElementById('whatsappNotifications').checked,
-                businessMode: document.getElementById('whatsappBusinessMode').checked
-            };
-            localStorage.setItem('whatsappConfig', JSON.stringify(config));
-            updateWhatsAppDisplay();
-            showNotification('✅ Configuración de WhatsApp Business guardada correctamente');
-        }
-
-
-        function notifyAdminWhatsApp(order) {
-            const whatsappNumber = getWhatsAppNumber();
-            const productsList = order.items.map(i => `${i.name} x${i.quantity}`).join(', ');
-            const message = `🔔 *NUEVO PEDIDO RECIBIDO*\n\n📦 ID: ${order.id}\n👤 Cliente: ${order.userId}\n📦 Productos: ${productsList}\n💰 Total: $${order.total.toFixed(2)} MXN`;
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-            
-            // Send silently in background
-            fetch(whatsappUrl, {method: 'GET'}).catch(() => {});
-        }
-
-        function getWhatsAppNumber() {
-            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "businessMode": true}');
-            return config.number;
-        }
-        
-        function isWhatsAppBusinessMode() {
+                                function isWhatsAppBusinessMode() {
             const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"businessMode": true}');
             return config.businessMode;
         }
