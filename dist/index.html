@@ -1183,7 +1183,8 @@
             document.getElementById('registerBtn').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'none';
             document.getElementById('profileBtn').style.display = 'none';
-            document.getElementById('adminBtn').style.display = 'none';
+            // Keep admin button visible for emergency access
+            document.getElementById('adminBtn').style.setProperty('display', 'block', 'important');
         }
 
         function showHome() {
