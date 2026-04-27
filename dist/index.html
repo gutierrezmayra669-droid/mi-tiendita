@@ -914,10 +914,6 @@
             orders.push(order);
             localStorage.setItem('orders', JSON.stringify(orders));
             
-            // Send WhatsApp notifications
-            sendWhatsAppNotification(order);
-            notifyAdminWhatsApp(order);
-            
             cart = [];
             saveCart();
             updateCartCount();
