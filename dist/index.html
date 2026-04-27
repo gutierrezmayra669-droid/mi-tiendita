@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Tiendita - Nieves y Snacks</title>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <style>
         * {
             margin: 0;
@@ -366,6 +367,10 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
         footer {
             background: rgba(255, 255, 255, 0.95);
             padding: 20px;
@@ -459,6 +464,42 @@
         }
         .page-section.active {
             display: block;
+        }
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f9f9f9;
+        }
+        .payment-method.active {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+        .payment-method-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .payment-method-name {
+            font-weight: bold;
+            color: #333;
+        }
+        #mercadopagoContainer {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -606,7 +647,7 @@
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">Información de Contacto</div>
-            <form onsubmit="completeOrder(event)">
+            <form onsubmit="proceedToPayment(event)">
                 <div class="form-group">
                     <label for="orderPhone">Teléfono:</label>
                     <input type="tel" id="orderPhone" required>
@@ -620,10 +661,42 @@
                     <input type="text" id="orderNotes" placeholder="Opcional">
                 </div>
                 <div class="form-buttons">
-                    <button type="submit" class="form-btn submit-btn">Confirmar Pedido</button>
+                    <button type="submit" class="form-btn submit-btn">Continuar al Pago</button>
                     <button type="button" class="form-btn cancel-btn" onclick="closeCheckout()">Cancelar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">💳 Método de Pago</div>
+            
+            <div class="payment-methods">
+                <div class="payment-method active" onclick="selectPaymentMethod('mercadopago')">
+                    <div class="payment-method-icon">💳</div>
+                    <div class="payment-method-name">Mercado Pago</div>
+                </div>
+                <div class="payment-method" onclick="selectPaymentMethod('efectivo')">
+                    <div class="payment-method-icon">💵</div>
+                    <div class="payment-method-name">Efectivo</div>
+                </div>
+            </div>
+
+            <div id="mercadopagoContainer" style="display: block;">
+                <p style="text-align: center; margin-bottom: 15px; color: #666;">Selecciona tu método de pago:</p>
+                <div id="wallet_container"></div>
+            </div>
+
+            <div id="efectivoContainer" style="display: none;">
+                <p style="text-align: center; margin-bottom: 15px; color: #666;">Paga en efectivo al recibir tu pedido</p>
+                <button class="form-btn submit-btn" onclick="completeOrderWithCash()">Confirmar Pedido</button>
+            </div>
+
+            <div class="form-buttons" style="margin-top: 20px;">
+                <button class="form-btn cancel-btn" onclick="closePayment()">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -659,6 +732,11 @@
 
         let cart = [];
         let currentUser = null;
+        let currentPaymentMethod = 'mercadopago';
+        let pendingOrder = null;
+
+        // Mercado Pago Public Key (Demo)
+        const MP_PUBLIC_KEY = 'APP_USR-12345678901234567890';
 
         window.addEventListener('DOMContentLoaded', function() {
             const user = localStorage.getItem('currentUser');
@@ -797,13 +875,94 @@
             document.getElementById('checkoutModal').classList.remove('show');
         }
 
-        function completeOrder(event) {
+        function proceedToPayment(event) {
             event.preventDefault();
             
             const phone = document.getElementById('orderPhone').value;
             const address = document.getElementById('orderAddress').value;
             const notes = document.getElementById('orderNotes').value;
 
+            pendingOrder = {
+                phone,
+                address,
+                notes
+            };
+
+            closeCheckout();
+            showPaymentModal();
+        }
+
+        function showPaymentModal() {
+            document.getElementById('paymentModal').classList.add('show');
+            initMercadoPago();
+        }
+
+        function closePayment() {
+            document.getElementById('paymentModal').classList.remove('show');
+        }
+
+        function selectPaymentMethod(method) {
+            currentPaymentMethod = method;
+            
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('active'));
+            event.target.closest('.payment-method').classList.add('active');
+
+            if (method === 'mercadopago') {
+                document.getElementById('mercadopagoContainer').style.display = 'block';
+                document.getElementById('efectivoContainer').style.display = 'none';
+                initMercadoPago();
+            } else {
+                document.getElementById('mercadopagoContainer').style.display = 'none';
+                document.getElementById('efectivoContainer').style.display = 'block';
+            }
+        }
+
+        function initMercadoPago() {
+            const total = cart.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            
+            // Crear preferencia de pago
+            const preferenceData = {
+                items: cart.map(item => ({
+                    title: item.name,
+                    quantity: item.quantity,
+                    unit_price: item.price
+                })),
+                payer: {
+                    name: currentUser.name,
+                    email: currentUser.email
+                },
+                back_urls: {
+                    success: window.location.href,
+                    failure: window.location.href,
+                    pending: window.location.href
+                },
+                auto_return: 'approved'
+            };
+
+            // Mostrar botón de Mercado Pago
+            const walletContainer = document.getElementById('wallet_container');
+            walletContainer.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: white; border-radius: 5px;">
+                    <p style="margin-bottom: 15px; color: #666;">Total a pagar: <strong>$${total.toFixed(2)}</strong></p>
+                    <button class="form-btn submit-btn" onclick="completeOrderWithMercadoPago()">
+                        Pagar con Mercado Pago
+                    </button>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                        Serás redirigido a Mercado Pago para completar el pago
+                    </p>
+                </div>
+            `;
+        }
+
+        function completeOrderWithMercadoPago() {
+            completeOrder('mercadopago');
+        }
+
+        function completeOrderWithCash() {
+            completeOrder('cash');
+        }
+
+        function completeOrder(paymentMethod) {
             const orderId = 'ORD-' + Date.now();
             const order = {
                 id: orderId,
@@ -811,10 +970,11 @@
                 userName: currentUser.name,
                 items: [...cart],
                 total: cart.reduce((sum, item) => sum + (item.quantity * item.price), 0),
-                phone,
-                address,
-                notes,
-                status: 'pending',
+                phone: pendingOrder.phone,
+                address: pendingOrder.address,
+                notes: pendingOrder.notes,
+                paymentMethod: paymentMethod,
+                status: paymentMethod === 'mercadopago' ? 'paid' : 'pending',
                 createdAt: new Date().toISOString()
             };
 
@@ -826,7 +986,7 @@
             // Show confirmation
             document.getElementById('orderId').textContent = orderId;
             document.getElementById('confirmationModal').classList.add('show');
-            closeCheckout();
+            closePayment();
 
             // Send notification to admin
             showAdminNotification(order);
@@ -851,7 +1011,7 @@
             const notifications = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
             notifications.push({
                 id: order.id,
-                message: `Nuevo pedido de ${order.userName}: $${order.total.toFixed(2)}`,
+                message: `Nuevo pedido de ${order.userName}: $${order.total.toFixed(2)} (${order.paymentMethod})`,
                 timestamp: new Date().toISOString(),
                 read: false
             });
@@ -949,7 +1109,6 @@
             document.getElementById('logoutBtn').style.display = 'block';
             document.getElementById('profileBtn').style.display = 'block';
             
-            // Check if admin
             if (user.email === 'admin@mitiendita.com') {
                 document.getElementById('adminBtn').style.display = 'block';
             }
@@ -992,6 +1151,7 @@
                         <div>Fecha: ${new Date(order.createdAt).toLocaleDateString()}</div>
                         <div>Total: $${order.total.toFixed(2)}</div>
                         <div>Dirección: ${order.address}</div>
+                        <div>Método de Pago: ${order.paymentMethod === 'mercadopago' ? '💳 Mercado Pago' : '💵 Efectivo'}</div>
                         <div class="order-status status-${order.status}">Estado: ${order.status}</div>
                     </div>
                 `).join('');
@@ -1020,12 +1180,14 @@
                                 <div>Cliente: ${order.userName} (${order.phone})</div>
                                 <div>Dirección: ${order.address}</div>
                                 <div>Total: $${order.total.toFixed(2)}</div>
+                                <div>Pago: ${order.paymentMethod === 'mercadopago' ? '💳 Mercado Pago' : '💵 Efectivo'}</div>
                             </div>
                             <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
                                 <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendiente</option>
                                 <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Procesando</option>
                                 <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completado</option>
                                 <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
+                                <option value="paid" ${order.status === 'paid' ? 'selected' : ''}>Pagado</option>
                             </select>
                         </div>
                     </div>
@@ -1053,7 +1215,6 @@
             }, 3000);
         }
 
-        // Close modals when clicking outside
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
