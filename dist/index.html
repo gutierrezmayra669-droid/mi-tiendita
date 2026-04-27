@@ -843,8 +843,9 @@
             orders.push(order);
             localStorage.setItem('orders', JSON.stringify(orders));
             
-            // Send WhatsApp notification
+            // Send WhatsApp notifications
             sendWhatsAppNotification(order);
+            notifyAdminWhatsApp(order);
             
             cart = [];
             saveCart();
@@ -1127,6 +1128,17 @@
             };
             localStorage.setItem('whatsappConfig', JSON.stringify(config));
             showNotification('Configuración de WhatsApp guardada');
+        }
+
+
+        function notifyAdminWhatsApp(order) {
+            const whatsappNumber = getWhatsAppNumber();
+            const productsList = order.items.map(i => `${i.name} x${i.quantity}`).join(', ');
+            const message = `🔔 *NUEVO PEDIDO RECIBIDO*\n\n📦 ID: ${order.id}\n👤 Cliente: ${order.userId}\n📦 Productos: ${productsList}\n💰 Total: $${order.total.toFixed(2)} MXN`;
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Send silently in background
+            fetch(whatsappUrl, {method: 'GET'}).catch(() => {});
         }
 
         function getWhatsAppNumber() {
