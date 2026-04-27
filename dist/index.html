@@ -864,33 +864,71 @@
 
         // Stock Management Functions
         function loadStock() {
-            const saved = localStorage.getItem('stock');
-            if (!saved) {
+            try {
+                const saved = localStorage.getItem('stock');
+                if (!saved || saved === '{}') {
+                    const stock = {};
+                    products.forEach(p => {
+                        stock[p.id] = p.stock || 0;
+                    });
+                    localStorage.setItem('stock', JSON.stringify(stock));
+                    console.log('✅ Stock initialized');
+                }
+            } catch (error) {
+                console.error('Error loading stock:', error);
+                // Fallback: reinitialize stock
                 const stock = {};
-                products.forEach(p => stock[p.id] = p.stock);
+                products.forEach(p => stock[p.id] = p.stock || 0);
                 localStorage.setItem('stock', JSON.stringify(stock));
             }
         }
 
         function getStock(productId) {
-            const stock = JSON.parse(localStorage.getItem('stock') || '{}');
-            return stock[productId] || 0;
+            try {
+                const stock = JSON.parse(localStorage.getItem('stock') || '{}');
+                const qty = stock[productId];
+                return qty !== undefined ? qty : 0;
+            } catch (error) {
+                console.error('Error getting stock:', error);
+                return 0;
+            }
         }
 
         function updateStock(productId, quantity) {
-            const stock = JSON.parse(localStorage.getItem('stock') || '{}');
-            stock[productId] = (stock[productId] || 0) - quantity;
-            localStorage.setItem('stock', JSON.stringify(stock));
+            try {
+                const stock = JSON.parse(localStorage.getItem('stock') || '{}');
+                const currentStock = stock[productId] || 0;
+                const newStock = currentStock - quantity;
+                
+                if (newStock < 0) {
+                    console.warn(`⚠️ Stock negativo evitado para producto ${productId}`);
+                    stock[productId] = 0;
+                } else {
+                    stock[productId] = newStock;
+                }
+                
+                localStorage.setItem('stock', JSON.stringify(stock));
+                console.log(`✅ Stock actualizado: ${productId} -> ${stock[productId]}`);
+            } catch (error) {
+                console.error('Error updating stock:', error);
+            }
         }
 
         function restoreStock(productId, quantity) {
-            const stock = JSON.parse(localStorage.getItem('stock') || '{}');
-            stock[productId] = (stock[productId] || 0) + quantity;
-            localStorage.setItem('stock', JSON.stringify(stock));
+            try {
+                const stock = JSON.parse(localStorage.getItem('stock') || '{}');
+                stock[productId] = (stock[productId] || 0) + quantity;
+                localStorage.setItem('stock', JSON.stringify(stock));
+                console.log(`✅ Stock restaurado: ${productId} +${quantity}`);
+            } catch (error) {
+                console.error('Error restoring stock:', error);
+            }
         }
 
         function hasStock(productId, quantity) {
-            return getStock(productId) >= quantity;
+            const available = getStock(productId);
+            const needed = parseInt(quantity) || 1;
+            return available >= needed;
         }
 
         // Calculate total with wholesale pricing
