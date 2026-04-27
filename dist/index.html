@@ -548,17 +548,32 @@
                 <!-- WhatsApp Configuration Tab -->
                 <div id="whatsappTab" class="admin-content" style="display: none;">
                     <div class="admin-section">
-                        <h3>Configurar WhatsApp</h3>
+                        <h3>Configurar WhatsApp Business</h3>
                         <div class="form-group">
-                            <label>Número de WhatsApp (con código de país):</label>
+                            <label>Número de WhatsApp Business (con código de país):</label>
                             <input type="text" id="whatsappNumber" placeholder="ej: 526562853574" value="526562853574">
+                            <small style="color: #666; display: block; margin-top: 5px;">Formato: código país + número (ej: 52 + 6562853574)</small>
                         </div>
                         <div class="form-group">
                             <label>
-                                <input type="checkbox" id="whatsappNotifications" checked> Enviar notificaciones de pedidos por WhatsApp
+                                <input type="checkbox" id="whatsappNotifications" checked> Enviar notificaciones de pedidos por WhatsApp Business
                             </label>
                         </div>
-                        <button class="submit-btn" onclick="saveWhatsAppConfig()">Guardar Configuración WhatsApp</button>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="whatsappBusinessMode" checked> Modo WhatsApp Business (API)
+                            </label>
+                            <small style="color: #666; display: block; margin-top: 5px;">Cuando está activado, usa la API de WhatsApp Business para enviar mensajes automáticos</small>
+                        </div>
+                        <button class="submit-btn" onclick="saveWhatsAppConfig()">Guardar Configuración WhatsApp Business</button>
+                        <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 5px; border-left: 4px solid #4caf50;">
+                            <strong>✅ Configuración Activa:</strong>
+                            <p style="margin-top: 10px; font-size: 0.9em;">
+                                📱 Número: <span id="activeWhatsAppNumber">526562853574</span><br>
+                                🔔 Notificaciones: <span id="activeNotifications">Activadas</span><br>
+                                🏢 Modo Business: <span id="activeBusinessMode">Activado</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -1116,18 +1131,29 @@
 
 
         function loadWhatsAppConfig() {
-            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "notifications": true}');
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "notifications": true, "businessMode": true}');
             document.getElementById('whatsappNumber').value = config.number;
             document.getElementById('whatsappNotifications').checked = config.notifications;
+            document.getElementById('whatsappBusinessMode').checked = config.businessMode;
+            updateWhatsAppDisplay();
+        }
+        
+        function updateWhatsAppDisplay() {
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "notifications": true, "businessMode": true}');
+            document.getElementById('activeWhatsAppNumber').textContent = config.number;
+            document.getElementById('activeNotifications').textContent = config.notifications ? '✅ Activadas' : '❌ Desactivadas';
+            document.getElementById('activeBusinessMode').textContent = config.businessMode ? '✅ Activado' : '❌ Desactivado';
         }
 
         function saveWhatsAppConfig() {
             const config = {
                 number: document.getElementById('whatsappNumber').value,
-                notifications: document.getElementById('whatsappNotifications').checked
+                notifications: document.getElementById('whatsappNotifications').checked,
+                businessMode: document.getElementById('whatsappBusinessMode').checked
             };
             localStorage.setItem('whatsappConfig', JSON.stringify(config));
-            showNotification('Configuración de WhatsApp guardada');
+            updateWhatsAppDisplay();
+            showNotification('✅ Configuración de WhatsApp Business guardada correctamente');
         }
 
 
@@ -1142,8 +1168,13 @@
         }
 
         function getWhatsAppNumber() {
-            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574"}');
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "526562853574", "businessMode": true}');
             return config.number;
+        }
+        
+        function isWhatsAppBusinessMode() {
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"businessMode": true}');
+            return config.businessMode;
         }
 
         window.onclick = function(event) {
