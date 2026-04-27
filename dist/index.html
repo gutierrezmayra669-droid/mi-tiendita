@@ -462,6 +462,9 @@
 
         <!-- Home Page -->
         <div id="homePage" class="page-section active">
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="searchInput" placeholder="🔍 Buscar productos..." style="width: 100%; padding: 12px; border: 2px solid #667eea; border-radius: 5px; font-size: 1em;" onkeyup="searchProducts()">
+            </div>
             <div class="category-tabs">
                 <div class="category-tab active" onclick="filterByCategory('nieves')">🍦 Nieves</div>
                 <div class="category-tab" onclick="filterByCategory('abarrotes')">🥫 Abarrotes</div>
@@ -727,6 +730,7 @@
     <script>
         let products = [];
         let cart = [];
+        let wishlist = [];
         let currentUser = null;
         let currentCategory = 'nieves';
 
@@ -749,8 +753,79 @@
         // Wholesale category
         const WHOLESALE_CATEGORY = 'mayoreo';
 
+        // Wishlist functionality
+        function loadWishlist() {
+            const saved = localStorage.getItem('wishlist');
+            if (saved) {
+                wishlist = JSON.parse(saved);
+            }
+        }
+
+        function saveWishlist() {
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+
+        function toggleWishlist(productId) {
+            const index = wishlist.findIndex(id => id === productId);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                showNotification('Producto removido de favoritos');
+            } else {
+                wishlist.push(productId);
+                showNotification('Producto agregado a favoritos');
+            }
+            saveWishlist();
+            renderProducts();
+        }
+
+        function isInWishlist(productId) {
+            return wishlist.includes(productId);
+        }
+
+        // Search functionality
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.category === currentCategory && 
+                (p.name.toLowerCase().includes(searchTerm) || p.desc.toLowerCase().includes(searchTerm))
+            );
+            const container = document.getElementById('productsContainer');
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No se encontraron productos</p>';
+            } else {
+                container.innerHTML = filtered.map(product => {
+                    const wholesaleInfo = `<div style="font-size: 0.85em; color: #2B9EB3; margin-top: 5px;">💰 Mayoreo: $${product.wholesalePrice.toFixed(2)} (mín. ${product.minWholesale} unidades)</div>`;
+                    return `
+                    <div class="product">
+                        <div class="product-image">${product.image}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        ${wholesaleInfo}
+                        <div class="product-desc">${product.desc}</div>
+                        <div class="product-quantity">
+                            <button class="quantity-btn" onclick="changeQty(${product.id}, -1)">-</button>
+                            <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
+                            <button class="quantity-btn" onclick="changeQty(${product.id}, 1)">+</button>
+                        </div>
+                        <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
+                    </div>
+                `;
+                }).join('');
+            }
+        }
+
+        // Clear search when changing category
+        function filterByCategory(category) {
+            currentCategory = category;
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts();
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
             loadProducts();
+            loadWishlist();
             const user = localStorage.getItem('currentUser');
             if (user) {
                 currentUser = JSON.parse(user);
@@ -774,21 +849,20 @@
             localStorage.setItem('products', JSON.stringify(products));
         }
 
-        function filterByCategory(category) {
-            currentCategory = category;
-            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            renderProducts();
-        }
+
 
         function renderProducts() {
             const filtered = products.filter(p => p.category === currentCategory);
             const container = document.getElementById('productsContainer');
             container.innerHTML = filtered.map(product => {
                 const wholesaleInfo = `<div style="font-size: 0.85em; color: #2B9EB3; margin-top: 5px;">💰 Mayoreo: $${product.wholesalePrice.toFixed(2)} (mín. ${product.minWholesale} unidades)</div>`;
+                const wishlistIcon = isInWishlist(product.id) ? '❤️' : '🤍';
                 return `
                 <div class="product">
-                    <div class="product-image">${product.image}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div class="product-image">${product.image}</div>
+                        <button style="background: none; border: none; font-size: 1.5em; cursor: pointer;" onclick="toggleWishlist(${product.id})">${wishlistIcon}</button>
+                    </div>
                     <div class="product-name">${product.name}</div>
                     <div class="product-price">$${product.price.toFixed(2)}</div>
                     ${wholesaleInfo}
@@ -954,6 +1028,8 @@
                 updateUIForLoggedIn(user);
                 closeLoginModal();
                 showNotification('¡Bienvenido!');
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
             } else {
                 showNotification('Correo o contraseña incorrectos');
             }
