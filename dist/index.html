@@ -456,6 +456,7 @@
                 <button id="loginBtn" class="auth-btn login-btn" onclick="showLoginModal()">Iniciar Sesión</button>
                 <button id="registerBtn" class="auth-btn register-btn" onclick="showRegisterModal()">Registrarse</button>
                 <button id="logoutBtn" class="auth-btn logout-btn" onclick="logout()" style="display: none;">Cerrar Sesión</button>
+                <a href="https://wa.me/5215555555555?text=Hola%20Mi%20Tiendita" target="_blank" class="auth-btn" style="background: #25D366; color: white; text-decoration: none;">💬 WhatsApp</a>
             </div>
         </header>
 
@@ -492,6 +493,7 @@
                     <button class="admin-tab active" onclick="switchAdminTab('editar')">✏️ Editar Productos</button>
                     <button class="admin-tab" onclick="switchAdminTab('pedidos')">📦 Pedidos</button>
                     <button class="admin-tab" onclick="switchAdminTab('pago')">💳 Métodos de Pago</button>
+                    <button class="admin-tab" onclick="switchAdminTab('whatsapp')">💬 WhatsApp</button>
                 </div>
 
                 <!-- Editar Tab -->
@@ -540,6 +542,23 @@
                     <div class="admin-section">
                         <h3>Pedidos de Clientes</h3>
                         <div id="adminOrdersList"></div>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Configuration Tab -->
+                <div id="whatsappTab" class="admin-content" style="display: none;">
+                    <div class="admin-section">
+                        <h3>Configurar WhatsApp</h3>
+                        <div class="form-group">
+                            <label>Número de WhatsApp (con código de país):</label>
+                            <input type="text" id="whatsappNumber" placeholder="ej: 5215555555555" value="5215555555555">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="whatsappNotifications" checked> Enviar notificaciones de pedidos por WhatsApp
+                            </label>
+                        </div>
+                        <button class="submit-btn" onclick="saveWhatsAppConfig()">Guardar Configuración WhatsApp</button>
                     </div>
                 </div>
 
@@ -823,11 +842,22 @@
             const orders = JSON.parse(localStorage.getItem('orders') || '[]');
             orders.push(order);
             localStorage.setItem('orders', JSON.stringify(orders));
+            
+            // Send WhatsApp notification
+            sendWhatsAppNotification(order);
+            
             cart = [];
             saveCart();
             updateCartCount();
             closeCart();
             showNotification('¡Pedido confirmado! ID: ' + order.id);
+        }
+
+        function sendWhatsAppNotification(order) {
+            const message = `Nuevo pedido confirmado!\n\nID: ${order.id}\nCliente: ${currentUser.name}\nTotal: $${order.total.toFixed(2)}\nProductos: ${order.items.map(i => i.name + ' x' + i.quantity).join(', ')}\n\nEstado: Pendiente`;
+            const whatsappUrl = `https://wa.me/5215555555555?text=${encodeURIComponent(message)}`;
+            // Open WhatsApp in new tab
+            window.open(whatsappUrl, '_blank');
         }
 
         function showLoginModal() {
@@ -939,6 +969,7 @@
             renderAdminProducts();
             renderAdminOrders();
             loadPaymentMethods();
+            loadWhatsAppConfig();
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('adminPage').classList.add('active');
         }
@@ -1080,6 +1111,27 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+
+
+        function loadWhatsAppConfig() {
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "5215555555555", "notifications": true}');
+            document.getElementById('whatsappNumber').value = config.number;
+            document.getElementById('whatsappNotifications').checked = config.notifications;
+        }
+
+        function saveWhatsAppConfig() {
+            const config = {
+                number: document.getElementById('whatsappNumber').value,
+                notifications: document.getElementById('whatsappNotifications').checked
+            };
+            localStorage.setItem('whatsappConfig', JSON.stringify(config));
+            showNotification('Configuración de WhatsApp guardada');
+        }
+
+        function getWhatsAppNumber() {
+            const config = JSON.parse(localStorage.getItem('whatsappConfig') || '{"number": "5215555555555"}');
+            return config.number;
         }
 
         window.onclick = function(event) {
