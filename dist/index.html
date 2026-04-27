@@ -261,6 +261,77 @@
             font-weight: 600;
         }
         
+        .login-gate { 
+            display: flex; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .login-gate.hidden { 
+            display: none;
+        }
+        
+        .login-gate-content { 
+            text-align: center;
+            color: white;
+            animation: slideUp 0.5s ease;
+        }
+        
+        .login-gate h1 { 
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .login-gate p { 
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .login-gate-buttons { 
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .login-gate-btn { 
+            padding: 15px 40px;
+            font-size: 16px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .login-gate-btn:hover { 
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+        }
+        
+        .logout-btn { 
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+        
+        .logout-btn:hover { 
+            background: #ff5252;
+            color: white;
+        }
+        
         @keyframes slideInRight {
             from { transform: translateX(400px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -316,14 +387,26 @@
     </style>
 </head>
 <body>
+    <!-- Login Gate -->
+    <div id="loginGate" class="login-gate">
+        <div class="login-gate-content">
+            <h1>🛒 Mi Tiendita Premium</h1>
+            <p>Inicia sesión para acceder a nuestros productos</p>
+            <div class="login-gate-buttons">
+                <button class="login-gate-btn" onclick="showLogin()">🔐 Iniciar Sesión</button>
+                <button class="login-gate-btn" onclick="showRegister()">📝 Registrarse</button>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
         <h1>🛒 Mi Tiendita Premium</h1>
         <p style="margin-bottom: 15px; font-size: 14px; opacity: 0.9;">Tu tienda online de confianza</p>
         <div class="auth-buttons">
-            <button class="auth-btn" onclick="showLogin()">🔐 Iniciar Sesión</button>
-            <button class="auth-btn" onclick="showRegister()">📝 Registrarse</button>
+            <span id="userDisplay" style="color: white; font-weight: 600; margin-right: 15px;"></span>
             <button class="auth-btn cart-btn" onclick="showCart()">🛒 Carrito</button>
             <button class="auth-btn" id="adminBtn" style="display:none; background: #ffd700; border-color: #ffd700; color: #333;" onclick="showAdmin()">⚙️ Admin</button>
+            <button class="auth-btn" onclick="logout()" style="background: #ff6b6b; border-color: #ff6b6b;">🚪 Cerrar Sesión</button>
         </div>
     </div>
 
@@ -492,15 +575,23 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
-            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                currentUser = {name: 'Admin', email: email, isAdmin: true};
-                localStorage.setItem('user', JSON.stringify(currentUser));
-                showNotification('🎉 ¡Bienvenido Admin!');
-                closeLogin();
-                checkSession();
-            } else {
-                showNotification('❌ Credenciales inválidas');
+            if (!email || !password) {
+                showNotification('⚠️ Completa todos los campos');
+                return;
             }
+            
+            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                currentUser = {name: 'Administrador', email: email, isAdmin: true};
+            } else {
+                currentUser = {name: email.split('@')[0], email: email, isAdmin: false};
+            }
+            
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            showNotification(`🎉 ¡Bienvenido ${currentUser.name}!`);
+            closeLogin();
+            checkSession();
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
         }
         
         function showRegister() {
@@ -512,8 +603,23 @@
         }
         
         function handleRegister() {
-            showNotification('✅ Registro completado');
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            if (!name || !email || !password) {
+                showNotification('⚠️ Completa todos los campos');
+                return;
+            }
+            
+            currentUser = {name: name, email: email, isAdmin: false};
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            showNotification('✅ ¡Registro exitoso!');
             closeRegister();
+            checkSession();
+            document.getElementById('registerName').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
         }
         
         function showAdmin() {
@@ -524,10 +630,23 @@
             const user = localStorage.getItem('user');
             if (user) {
                 currentUser = JSON.parse(user);
+                document.getElementById('loginGate').classList.add('hidden');
+                document.getElementById('userDisplay').textContent = `👤 ${currentUser.name}`;
                 if (currentUser.isAdmin) {
                     document.getElementById('adminBtn').style.display = 'inline-block';
                 }
+            } else {
+                document.getElementById('loginGate').classList.remove('hidden');
+                document.getElementById('userDisplay').textContent = '';
             }
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            currentUser = null;
+            cart = [];
+            checkSession();
+            showNotification('👋 Sesión cerrada');
         }
         
         function showNotification(msg) {
