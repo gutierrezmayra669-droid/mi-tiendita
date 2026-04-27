@@ -44,6 +44,31 @@
             color: #666;
             font-size: 1.1em;
         }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5em;
+        }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
         .auth-buttons {
             display: flex;
             gap: 10px;
@@ -78,10 +103,16 @@
         .logout-btn:hover {
             background: #ee5a52;
         }
+        .admin-btn {
+            background: #ffa500;
+            color: white;
+        }
+        .admin-btn:hover {
+            background: #ff8c00;
+        }
         .user-info {
             color: #667eea;
             font-weight: bold;
-            margin-right: 15px;
         }
         .modal {
             display: none;
@@ -92,11 +123,13 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
         }
         .modal.show {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            padding-top: 50px;
         }
         .modal-content {
             background-color: white;
@@ -104,7 +137,8 @@
             border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
+            margin-bottom: 50px;
         }
         .modal-header {
             font-size: 1.8em;
@@ -122,14 +156,14 @@
             color: #333;
             font-weight: bold;
         }
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1em;
         }
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
@@ -215,6 +249,29 @@
             font-size: 0.9em;
             margin-bottom: 15px;
         }
+        .product-quantity {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .quantity-btn {
+            background: #ddd;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .quantity-btn:hover {
+            background: #ccc;
+        }
+        .quantity-input {
+            width: 50px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
         .btn {
             background: #667eea;
             color: white;
@@ -232,6 +289,82 @@
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+        }
+        .cart-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-item-info {
+            flex: 1;
+        }
+        .cart-item-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .cart-item-price {
+            color: #667eea;
+            font-weight: bold;
+        }
+        .cart-item-remove {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .cart-item-remove:hover {
+            background: #ee5a52;
+        }
+        .cart-total {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: right;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 20px;
+        }
+        .order-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .order-id {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .order-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-processing {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
         }
         footer {
             background: rgba(255, 255, 255, 0.95);
@@ -262,17 +395,69 @@
             color: #666;
             font-size: 0.9em;
         }
-        .login-required {
+        .section {
             display: none;
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
+        }
+        .section.active {
+            display: block;
+        }
+        .admin-orders {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .admin-order {
+            background: #f9f9f9;
             padding: 15px;
             border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffa500;
         }
-        .login-required.show {
+        .admin-order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .admin-order-id {
+            font-weight: bold;
+            color: #333;
+        }
+        .status-select {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 2000;
+        }
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease-in-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
             display: block;
         }
     </style>
@@ -284,103 +469,68 @@
                 <h1>🍦 Mi Tiendita 🍦</h1>
                 <p class="subtitle">Nieves y Snacks Deliciosos</p>
             </div>
-            <div class="auth-buttons">
-                <span id="userInfo" class="user-info" style="display: none;"></span>
-                <button id="loginBtn" class="auth-btn login-btn" onclick="showLoginModal()">Iniciar Sesión</button>
-                <button id="registerBtn" class="auth-btn register-btn" onclick="showRegisterModal()">Registrarse</button>
-                <button id="logoutBtn" class="auth-btn logout-btn" onclick="logout()" style="display: none;">Cerrar Sesión</button>
+            <div class="header-actions">
+                <div class="cart-icon" onclick="showCart()">
+                    🛒
+                    <span class="cart-count" id="cartCount" style="display: none;">0</span>
+                </div>
+                <div class="auth-buttons">
+                    <span id="userInfo" class="user-info" style="display: none;"></span>
+                    <button id="profileBtn" class="auth-btn login-btn" onclick="showProfile()" style="display: none;">Mi Perfil</button>
+                    <button id="adminBtn" class="auth-btn admin-btn" onclick="showAdmin()" style="display: none;">Admin</button>
+                    <button id="loginBtn" class="auth-btn login-btn" onclick="showLoginModal()">Iniciar Sesión</button>
+                    <button id="registerBtn" class="auth-btn register-btn" onclick="showRegisterModal()">Registrarse</button>
+                    <button id="logoutBtn" class="auth-btn logout-btn" onclick="logout()" style="display: none;">Cerrar Sesión</button>
+                </div>
             </div>
         </header>
 
-        <div id="loginRequired" class="login-required">
-            ⚠️ Debes iniciar sesión para realizar pedidos
+        <!-- Home Page -->
+        <div id="homePage" class="page-section active">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Productos</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Clientes Felices</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Disponible</div>
+                </div>
+            </div>
+
+            <div class="products" id="productsContainer"></div>
+
+            <footer>
+                <p>&copy; 2024 Mi Tiendita. Todos los derechos reservados.</p>
+                <p>📱 Contacto: +1-555-0123 | 📧 info@mitiendita.com</p>
+            </footer>
         </div>
 
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-number">50+</div>
-                <div class="stat-label">Productos</div>
+        <!-- Profile Page -->
+        <div id="profilePage" class="page-section">
+            <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Mi Perfil</h2>
+                <div id="profileInfo"></div>
+                <button class="auth-btn login-btn" onclick="showHome()" style="margin-top: 20px;">Volver a Inicio</button>
             </div>
-            <div class="stat-box">
-                <div class="stat-number">1000+</div>
-                <div class="stat-label">Clientes Felices</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">Disponible</div>
-            </div>
-        </div>
-
-        <div class="products">
-            <div class="product">
-                <div class="product-icon">🍨</div>
-                <div class="product-name">Nieves de Vaso</div>
-                <div class="product-price">$2.50</div>
-                <div class="product-desc">Deliciosas nieves en vaso grande</div>
-                <button class="btn" onclick="orderProduct('Nieves de Vaso', 2.50)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product">
-                <div class="product-icon">🍧</div>
-                <div class="product-name">Raspa Chaguitos</div>
-                <div class="product-price">$1.50</div>
-                <div class="product-desc">Raspa refrescante con sabor a chaguitos</div>
-                <button class="btn" onclick="orderProduct('Raspa Chaguitos', 1.50)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product">
-                <div class="product-icon">🍦</div>
-                <div class="product-name">Paletas de Crema</div>
-                <div class="product-price">$1.00</div>
-                <div class="product-desc">Paletas cremosas y deliciosas</div>
-                <button class="btn" onclick="orderProduct('Paletas de Crema', 1.00)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product">
-                <div class="product-icon">🍪</div>
-                <div class="product-name">Tostitos Preparados</div>
-                <div class="product-price">$2.00</div>
-                <div class="product-desc">Tostitos crujientes con toppings</div>
-                <button class="btn" onclick="orderProduct('Tostitos Preparados', 2.00)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product">
-                <div class="product-icon">🥜</div>
-                <div class="product-name">Cacahuetes Preparados</div>
-                <div class="product-price">$1.50</div>
-                <div class="product-desc">Cacahuetes tostados y sazonados</div>
-                <button class="btn" onclick="orderProduct('Cacahuetes Preparados', 1.50)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product">
-                <div class="product-icon">🍌</div>
-                <div class="product-name">Choco Plátanos</div>
-                <div class="product-price">$2.00</div>
-                <div class="product-desc">Plátanos cubiertos de chocolate</div>
-                <button class="btn" onclick="orderProduct('Choco Plátanos', 2.00)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product">
-                <div class="product-icon">🥤</div>
-                <div class="product-name">Mangoneada</div>
-                <div class="product-price">$3.00</div>
-                <div class="product-desc">Bebida refrescante de mango</div>
-                <button class="btn" onclick="orderProduct('Mangoneada', 3.00)">Ordenar Ahora</button>
-            </div>
-
-            <div class="product">
-                <div class="product-icon">🌋</div>
-                <div class="product-name">Volcanes</div>
-                <div class="product-price">$2.50</div>
-                <div class="product-desc">Postre especial con toppings</div>
-                <button class="btn" onclick="orderProduct('Volcanes', 2.50)">Ordenar Ahora</button>
+            <div style="background: white; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Mis Pedidos</h2>
+                <div id="ordersHistory"></div>
             </div>
         </div>
 
-        <footer>
-            <p>&copy; 2024 Mi Tiendita. Todos los derechos reservados.</p>
-            <p>📱 Contacto: +1-555-0123 | 📧 info@mitiendita.com</p>
-        </footer>
+        <!-- Admin Page -->
+        <div id="adminPage" class="page-section">
+            <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Panel de Administrador</h2>
+                <button class="auth-btn login-btn" onclick="showHome()" style="margin-bottom: 20px;">Volver a Inicio</button>
+                <div id="adminOrders"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Login Modal -->
@@ -439,14 +589,274 @@
         </div>
     </div>
 
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🛒 Carrito de Compras</div>
+            <div id="cartItems"></div>
+            <div class="cart-total" id="cartTotalDisplay" style="display: none;"></div>
+            <div class="form-buttons" style="margin-top: 20px;">
+                <button class="form-btn submit-btn" onclick="proceedToCheckout()" id="checkoutBtn" style="display: none;">Proceder al Pago</button>
+                <button class="form-btn cancel-btn" onclick="closeCart()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Información de Contacto</div>
+            <form onsubmit="completeOrder(event)">
+                <div class="form-group">
+                    <label for="orderPhone">Teléfono:</label>
+                    <input type="tel" id="orderPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderAddress">Dirección:</label>
+                    <input type="text" id="orderAddress" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderNotes">Notas Especiales:</label>
+                    <input type="text" id="orderNotes" placeholder="Opcional">
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="form-btn submit-btn">Confirmar Pedido</button>
+                    <button type="button" class="form-btn cancel-btn" onclick="closeCheckout()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">✅ Pedido Confirmado</div>
+            <div style="text-align: center; margin: 20px 0;">
+                <p style="font-size: 1.2em; color: #333; margin-bottom: 10px;">Tu pedido ha sido registrado exitosamente</p>
+                <p style="font-size: 1.5em; color: #667eea; font-weight: bold; margin-bottom: 20px;" id="orderId"></p>
+                <p style="color: #666;">Puedes ver el estado de tu pedido en tu perfil</p>
+            </div>
+            <div class="form-buttons">
+                <button class="form-btn submit-btn" onclick="closeConfirmation()">Ir a Mi Perfil</button>
+                <button class="form-btn cancel-btn" onclick="goToHome()">Volver a Inicio</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
     <script>
-        // Check if user is logged in on page load
+        const PRODUCTS = [
+            { id: 1, name: 'Nieves de Vaso', price: 2.50, icon: '🍨', desc: 'Deliciosas nieves en vaso grande' },
+            { id: 2, name: 'Raspa Chaguitos', price: 1.50, icon: '🍧', desc: 'Raspa refrescante con sabor a chaguitos' },
+            { id: 3, name: 'Paletas de Crema', price: 1.00, icon: '🍦', desc: 'Paletas cremosas y deliciosas' },
+            { id: 4, name: 'Tostitos Preparados', price: 2.00, icon: '🍪', desc: 'Tostitos crujientes con toppings' },
+            { id: 5, name: 'Cacahuetes Preparados', price: 1.50, icon: '🥜', desc: 'Cacahuetes tostados y sazonados' },
+            { id: 6, name: 'Choco Plátanos', price: 2.00, icon: '🍌', desc: 'Plátanos cubiertos de chocolate' },
+            { id: 7, name: 'Mangoneada', price: 3.00, icon: '🥤', desc: 'Bebida refrescante de mango' },
+            { id: 8, name: 'Volcanes', price: 2.50, icon: '🌋', desc: 'Postre especial con toppings' }
+        ];
+
+        let cart = [];
+        let currentUser = null;
+
         window.addEventListener('DOMContentLoaded', function() {
             const user = localStorage.getItem('currentUser');
             if (user) {
-                updateUIForLoggedIn(JSON.parse(user));
+                currentUser = JSON.parse(user);
+                updateUIForLoggedIn(currentUser);
             }
+            renderProducts();
+            loadCart();
         });
+
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = PRODUCTS.map(product => `
+                <div class="product">
+                    <div class="product-icon">${product.icon}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">$${product.price.toFixed(2)}</div>
+                    <div class="product-desc">${product.desc}</div>
+                    <div class="product-quantity">
+                        <button class="quantity-btn" onclick="changeQuantity(${product.id}, -1)">-</button>
+                        <input type="number" class="quantity-input" id="qty-${product.id}" value="1" min="1">
+                        <button class="quantity-btn" onclick="changeQuantity(${product.id}, 1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart(${product.id})">Agregar al Carrito</button>
+                </div>
+            `).join('');
+        }
+
+        function changeQuantity(productId, change) {
+            const input = document.getElementById(`qty-${productId}`);
+            let value = parseInt(input.value) + change;
+            if (value < 1) value = 1;
+            input.value = value;
+        }
+
+        function addToCart(productId) {
+            if (!currentUser) {
+                showNotification('Debes iniciar sesión para agregar productos al carrito');
+                showLoginModal();
+                return;
+            }
+
+            const quantity = parseInt(document.getElementById(`qty-${productId}`).value);
+            const product = PRODUCTS.find(p => p.id === productId);
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ ...product, quantity });
+            }
+
+            saveCart();
+            updateCartCount();
+            showNotification(`${product.name} agregado al carrito`);
+            document.getElementById(`qty-${productId}`).value = 1;
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function loadCart() {
+            const saved = localStorage.getItem('cart');
+            if (saved) {
+                cart = JSON.parse(saved);
+                updateCartCount();
+            }
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const countEl = document.getElementById('cartCount');
+            if (count > 0) {
+                countEl.textContent = count;
+                countEl.style.display = 'flex';
+            } else {
+                countEl.style.display = 'none';
+            }
+        }
+
+        function showCart() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+
+            const cartItemsDiv = document.getElementById('cartItems');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p style="text-align: center; color: #666;">Tu carrito está vacío</p>';
+                document.getElementById('checkoutBtn').style.display = 'none';
+                document.getElementById('cartTotalDisplay').style.display = 'none';
+            } else {
+                cartItemsDiv.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.icon} ${item.name}</div>
+                            <div>Cantidad: ${item.quantity} x $${item.price.toFixed(2)}</div>
+                            <div class="cart-item-price">Subtotal: $${(item.quantity * item.price).toFixed(2)}</div>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart(${index})">Eliminar</button>
+                    </div>
+                `).join('');
+
+                const total = cart.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+                document.getElementById('cartTotalDisplay').innerHTML = `Total: $${total.toFixed(2)}`;
+                document.getElementById('cartTotalDisplay').style.display = 'block';
+                document.getElementById('checkoutBtn').style.display = 'block';
+            }
+
+            document.getElementById('cartModal').classList.add('show');
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').classList.remove('show');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartCount();
+            showCart();
+        }
+
+        function proceedToCheckout() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            closeCart();
+            document.getElementById('checkoutModal').classList.add('show');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('show');
+        }
+
+        function completeOrder(event) {
+            event.preventDefault();
+            
+            const phone = document.getElementById('orderPhone').value;
+            const address = document.getElementById('orderAddress').value;
+            const notes = document.getElementById('orderNotes').value;
+
+            const orderId = 'ORD-' + Date.now();
+            const order = {
+                id: orderId,
+                userId: currentUser.email,
+                userName: currentUser.name,
+                items: [...cart],
+                total: cart.reduce((sum, item) => sum + (item.quantity * item.price), 0),
+                phone,
+                address,
+                notes,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            // Save order
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+
+            // Show confirmation
+            document.getElementById('orderId').textContent = orderId;
+            document.getElementById('confirmationModal').classList.add('show');
+            closeCheckout();
+
+            // Send notification to admin
+            showAdminNotification(order);
+
+            // Clear cart
+            cart = [];
+            saveCart();
+            updateCartCount();
+        }
+
+        function closeConfirmation() {
+            document.getElementById('confirmationModal').classList.remove('show');
+            showProfile();
+        }
+
+        function goToHome() {
+            document.getElementById('confirmationModal').classList.remove('show');
+            showHome();
+        }
+
+        function showAdminNotification(order) {
+            const notifications = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
+            notifications.push({
+                id: order.id,
+                message: `Nuevo pedido de ${order.userName}: $${order.total.toFixed(2)}`,
+                timestamp: new Date().toISOString(),
+                read: false
+            });
+            localStorage.setItem('adminNotifications', JSON.stringify(notifications));
+        }
 
         function showLoginModal() {
             document.getElementById('loginModal').classList.add('show');
@@ -479,17 +889,17 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
-            // Get users from localStorage
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             const user = users.find(u => u.email === email && u.password === password);
             
             if (user) {
+                currentUser = user;
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 updateUIForLoggedIn(user);
                 closeLoginModal();
-                alert('¡Bienvenido, ' + user.name + '!');
+                showNotification('¡Bienvenido, ' + user.name + '!');
             } else {
-                alert('Correo o contraseña incorrectos');
+                showNotification('Correo o contraseña incorrectos');
             }
         }
 
@@ -501,34 +911,34 @@
             const confirm = document.getElementById('registerConfirm').value;
             
             if (password !== confirm) {
-                alert('Las contraseñas no coinciden');
+                showNotification('Las contraseñas no coinciden');
                 return;
             }
             
-            // Get existing users
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             
-            // Check if email already exists
             if (users.find(u => u.email === email)) {
-                alert('Este correo ya está registrado');
+                showNotification('Este correo ya está registrado');
                 return;
             }
             
-            // Create new user
             const newUser = { name, email, password };
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
+            currentUser = newUser;
             localStorage.setItem('currentUser', JSON.stringify(newUser));
             
             updateUIForLoggedIn(newUser);
             closeRegisterModal();
-            alert('¡Registro exitoso! Bienvenido, ' + name + '!');
+            showNotification('¡Registro exitoso!');
         }
 
         function logout() {
             localStorage.removeItem('currentUser');
+            currentUser = null;
             updateUIForLoggedOut();
-            alert('Sesión cerrada');
+            showHome();
+            showNotification('Sesión cerrada');
         }
 
         function updateUIForLoggedIn(user) {
@@ -537,7 +947,12 @@
             document.getElementById('loginBtn').style.display = 'none';
             document.getElementById('registerBtn').style.display = 'none';
             document.getElementById('logoutBtn').style.display = 'block';
-            document.getElementById('loginRequired').classList.remove('show');
+            document.getElementById('profileBtn').style.display = 'block';
+            
+            // Check if admin
+            if (user.email === 'admin@mitiendita.com') {
+                document.getElementById('adminBtn').style.display = 'block';
+            }
         }
 
         function updateUIForLoggedOut() {
@@ -545,31 +960,107 @@
             document.getElementById('loginBtn').style.display = 'block';
             document.getElementById('registerBtn').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('profileBtn').style.display = 'none';
+            document.getElementById('adminBtn').style.display = 'none';
         }
 
-        function orderProduct(productName, price) {
-            const user = localStorage.getItem('currentUser');
-            if (!user) {
-                document.getElementById('loginRequired').classList.add('show');
+        function showHome() {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('homePage').classList.add('active');
+        }
+
+        function showProfile() {
+            if (!currentUser) {
                 showLoginModal();
                 return;
             }
+
+            document.getElementById('profileInfo').innerHTML = `
+                <p><strong>Nombre:</strong> ${currentUser.name}</p>
+                <p><strong>Email:</strong> ${currentUser.email}</p>
+            `;
+
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const userOrders = orders.filter(o => o.userId === currentUser.email);
+
+            if (userOrders.length === 0) {
+                document.getElementById('ordersHistory').innerHTML = '<p style="color: #666;">No tienes pedidos aún</p>';
+            } else {
+                document.getElementById('ordersHistory').innerHTML = userOrders.map(order => `
+                    <div class="order-item">
+                        <div class="order-id">Pedido: ${order.id}</div>
+                        <div>Fecha: ${new Date(order.createdAt).toLocaleDateString()}</div>
+                        <div>Total: $${order.total.toFixed(2)}</div>
+                        <div>Dirección: ${order.address}</div>
+                        <div class="order-status status-${order.status}">Estado: ${order.status}</div>
+                    </div>
+                `).join('');
+            }
+
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('profilePage').classList.add('active');
+        }
+
+        function showAdmin() {
+            if (!currentUser || currentUser.email !== 'admin@mitiendita.com') {
+                showNotification('Acceso denegado');
+                return;
+            }
+
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
             
-            const userData = JSON.parse(user);
-            alert('✅ Pedido realizado!\n\nProducto: ' + productName + '\nPrecio: $' + price.toFixed(2) + '\nCliente: ' + userData.name + '\n\nGracias por tu compra!');
+            if (orders.length === 0) {
+                document.getElementById('adminOrders').innerHTML = '<p style="color: #666;">No hay pedidos</p>';
+            } else {
+                document.getElementById('adminOrders').innerHTML = orders.map((order, index) => `
+                    <div class="admin-order">
+                        <div class="admin-order-header">
+                            <div>
+                                <div class="admin-order-id">Pedido: ${order.id}</div>
+                                <div>Cliente: ${order.userName} (${order.phone})</div>
+                                <div>Dirección: ${order.address}</div>
+                                <div>Total: $${order.total.toFixed(2)}</div>
+                            </div>
+                            <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+                                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Procesando</option>
+                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completado</option>
+                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
+                            </select>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('adminPage').classList.add('active');
+        }
+
+        function updateOrderStatus(index, newStatus) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders[index].status = newStatus;
+            localStorage.setItem('orders', JSON.stringify(orders));
+            showNotification('Estado del pedido actualizado');
+            showAdmin();
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
 
         // Close modals when clicking outside
         window.onclick = function(event) {
-            const loginModal = document.getElementById('loginModal');
-            const registerModal = document.getElementById('registerModal');
-            
-            if (event.target === loginModal) {
-                closeLoginModal();
-            }
-            if (event.target === registerModal) {
-                closeRegisterModal();
-            }
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
         }
     </script>
 </body>
